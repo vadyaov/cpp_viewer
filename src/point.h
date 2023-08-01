@@ -6,6 +6,8 @@
 /* По идее ни один из публичных методов не будет выбрасывать исключений,
  * нужно ли писать noexcept ? */
 
+#include <iostream>
+
 namespace s21 {
   class Point {
     public:
@@ -24,11 +26,21 @@ namespace s21 {
       /* Point(Point&&) noexcept; */
       /* Point& operator=(Point&&); */
 
+      friend std::ostream& operator<<(std::ostream& os, const s21::Point& p);
+
     private:
       float x_;
       float y_;
       float z_;
   };
+
+std::ostream& operator<<(std::ostream& os, const s21::Point& p) {
+  os << "(" << p.x_ << ", " << p.y_ << ", " << p.z_ << ")";
+  return os;
+}
+
 } // namespace s21
+
+
 
 #endif  // POINT_H_

@@ -2,9 +2,10 @@
 #define VERTEX_H_
 
 #include "point.h"
+#include "scene_object.h"
 
 namespace s21 {
-  class Vertex {
+  class Vertex : public SceneObject {
     public:
       Vertex() : position_() {}
       Vertex(float x, float y, float z) : position_(x, y, z) {}
@@ -21,7 +22,13 @@ namespace s21 {
       /* Vertex& operator=(Vertex&& other) noexcept; */
 
       Point get_position() { return position_; } // getter
-      void Transform(TransformMatrix& m) {}
+
+      void Transform(TransformMatrix& m) override {
+      }
+
+      friend std::ostream& operator<<(std::ostream& os, const Vertex& v) {
+        return os << v.position_;
+      }
 
     private:
       Point position_;
