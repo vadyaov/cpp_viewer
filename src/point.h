@@ -28,7 +28,11 @@ namespace s21 {
 
       friend std::ostream& operator<<(std::ostream& os, const s21::Point& p);
 
-    private:
+      /* float& operator[](int i) { */
+      /*   if (i < 0 || i > 2) throw std::out_of_range("out of range"); */
+      /* } */
+
+    public:
       float x_;
       float y_;
       float z_;

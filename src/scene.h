@@ -8,13 +8,18 @@ namespace s21 {
     public:
 
 
-      explicit Scene(const std::vector<Figure>& figures) {
-        figures_.reserve(figures.size());
-        std::copy(figures.begin(), figures.end(), figures_.begin());
+      explicit Scene(const std::vector<Figure>& figures) : figures_{figures}{
+        /* figures_.reserve(figures.size()); */
+        /* std::copy(figures.begin(), figures.end(), figures_.begin()); */
       }
 
       std::vector<Figure> GetFigure();
       void TransformFigures(TransformMatrix);
+
+      void print() {
+        for (const auto& f : figures_)
+          f.print();
+      }
 
     private:
       std::vector<Figure> figures_;
