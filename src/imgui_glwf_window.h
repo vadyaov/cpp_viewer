@@ -17,7 +17,9 @@ class ImguiWindow {
     ~ImguiWindow();
 
     int LoadModel(const std::string& path);
-    int MoveModel(float ax, float ay, float az);
+    int MoveModel(float, float, float);
+    int RotateModel(float, int);
+    int ScaleModel(float, float, float);
     int DrawModel();
 
     void Run() /*const*/;

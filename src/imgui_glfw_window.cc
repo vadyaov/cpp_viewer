@@ -64,7 +64,7 @@ ImguiWindow::ImguiWindow() {
 
 void ImguiWindow::Run() /*const*/ {
 
-  LoadModel("models/dragon.obj");
+  LoadModel("models/lamp.obj");
 
   while (!glfwWindowShouldClose(window)) {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -94,6 +94,8 @@ void ImguiWindow::SetingsWindow() {
     ImGui::Begin("Settings");
 
     if (ImGui::Button("Move")) MoveModel(-0.0f, -0.2f, 0.0f);
+    if (ImGui::Button("Rotate")) RotateModel(5.0f, s21::TransformMatrixBuilder::Axis::X);
+    if (ImGui::Button("Scale")) ScaleModel(0.7f, 0.7f, 0.7f);
 
     ImGui::End();
 }
@@ -129,6 +131,18 @@ int ImguiWindow::DrawModel() {
 int ImguiWindow::MoveModel(float ax, float ay, float az) {
   s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateMoveMatrix(ax, ay, az);
   models.front().TransformModel(m);
+  return 0;
+}
 
+
+int ImguiWindow::RotateModel(float angle, int axis) {
+  s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateRotationMatrix(angle, axis);
+  models.front().TransformModel(m);
+  return 0;
+}
+
+int ImguiWindow::ScaleModel(float sx, float sy, float sz) {
+  s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateScaleMatrix(sx, sy, sz);
+  models.front().TransformModel(m);
   return 0;
 }

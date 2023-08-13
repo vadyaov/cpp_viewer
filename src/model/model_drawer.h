@@ -35,7 +35,7 @@ class ModelDrawer {
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
       glBindVertexArray(vertex_array_);
 
-      glPointSize(5);
+      glPointSize(2);
 
       glDrawArrays(GL_POINTS, 0, vertices.size());
     }
