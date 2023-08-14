@@ -16,15 +16,13 @@ public:
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(const char* vertexPath, const char* fragmentPath)
-    {
+    Shader(const char* vertexPath, const char* fragmentPath) {
 
-  glewExperimental = true;
-  if (glewInit() != GLEW_OK) {
-    throw std::runtime_error("Failed to initialize GLEW");
-  }
+      glewExperimental = true;
+      if (glewInit() != GLEW_OK) {
+        throw std::runtime_error("Failed to initialize GLEW");
+      }
 
-      std::cout << vertexPath << "\n" << fragmentPath << std::endl;
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;

@@ -64,10 +64,10 @@ ImguiWindow::ImguiWindow() {
 
 void ImguiWindow::Run() /*const*/ {
 
-  LoadModel("models/lamp.obj");
+  LoadModel("models/cube.obj");
 
   while (!glfwWindowShouldClose(window)) {
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(clear_color.x, clear_color.y, clear_color.y, clear_color.z);
     glClear(GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -94,8 +94,11 @@ void ImguiWindow::SetingsWindow() {
     ImGui::Begin("Settings");
 
     if (ImGui::Button("Move")) MoveModel(-0.0f, -0.2f, 0.0f);
-    if (ImGui::Button("Rotate")) RotateModel(5.0f, s21::TransformMatrixBuilder::Axis::X);
+    if (ImGui::Button("Rotate")) RotateModel(1.5708f, s21::TransformMatrixBuilder::Axis::Z);
     if (ImGui::Button("Scale")) ScaleModel(0.7f, 0.7f, 0.7f);
+
+    ImGui::ColorEdit3("Back Color", (float *)&clear_color);
+    ImGui::ColorEdit3("Vertex Color", (float *)&vertex_color);
 
     ImGui::End();
 }
@@ -124,6 +127,7 @@ int ImguiWindow::LoadModel(const std::string& path) {
 
 int ImguiWindow::DrawModel() {
   drawer_->MakeMVP();
+  drawer_->SetColor("MyColor", vertex_color.x, vertex_color.y, vertex_color.z, vertex_color.w);
   drawer_->Draw(models.front().GetVertexArray());
   return 0;
 }
