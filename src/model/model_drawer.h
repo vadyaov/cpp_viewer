@@ -29,7 +29,7 @@ class ModelDrawer {
       shader_->setVec4(name, x, y, z, w);
     }
 
-    void Draw(const std::vector<_3DVertex>& vertices) {
+    void Draw(const std::vector<_3DVertex>& vertices, GLuint type) {
 
       glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_); // lishnee na vsiakiy
 
@@ -41,7 +41,7 @@ class ModelDrawer {
 
       glPointSize(5);
 
-      glDrawArrays(GL_POINTS, 0, vertices.size());
+      glDrawArrays(type, 0, vertices.size());
     }
 
     void MakeMVP() {

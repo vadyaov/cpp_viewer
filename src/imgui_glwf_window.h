@@ -13,6 +13,9 @@
 
 class ImguiWindow {
   public:
+    glm::vec4 vertex_color;
+    glm::vec4 clear_color;
+
     ImguiWindow();
     ~ImguiWindow();
 
@@ -20,7 +23,7 @@ class ImguiWindow {
     int MoveModel(float, float, float);
     int RotateModel(float, int);
     int ScaleModel(float, float, float);
-    int DrawModel();
+    int DrawModel(GLuint);
 
     void Run() /*const*/;
     void SetingsWindow();
@@ -29,7 +32,6 @@ class ImguiWindow {
     GLFWwindow* window;
     std::vector<Model> models;
     ModelDrawer *drawer_;
-
 };
 
 #endif // imgui_glwf_window_h

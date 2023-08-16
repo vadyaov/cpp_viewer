@@ -21,23 +21,16 @@ class FileReader {
 
       std::string line;
       while (std::getline(file, line)) {
-        /* std::cout << line << std::endl; */
         if (IsVertexLine(line)) {
           vertex_buf_.push_back(ReadVertex(std::string(line.begin() + 2, line.end())));
         } else if (IsSurfaceLine(line)) {
           surface_buf_.push_back(ReadSurface(line));
-          /* for (std::size_t i = 0; i < surface.size() - 1; ++i) { */
-          /*   /1* std::cout << vertices[surface[i] - 1] << std::endl; *1/ */
-          /*   edges.push_back(Edge(vertices[surface[i] - 1], vertices[surface[i + 1] - 1])); */
-          /* } */
-          /* /1* std::cout << vertices[surface.back() - 1] << std::endl; *1/ */
-          /* edges.push_back(Edge(vertices[surface.back() - 1], vertices[surface.front() - 1])); */
-        }
+       }
       }
     }
 
     std::vector<_3DVertex> GetVertexBuffer() {return (vertex_buf_);}
-    std::vector<std::vector<int>> GetSurfaceBuffer() {return (surface_buf_);}
+    std::vector<std::vector<int>> GetSurfaceBuffer() {return surface_buf_;}
 
     void print() {
       std::cout << "Inside Reader:\n\n";

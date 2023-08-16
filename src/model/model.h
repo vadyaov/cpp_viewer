@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <functional>
 
 #include "file_reader.h"
 #include "transform_matrix.h"
@@ -30,17 +31,22 @@ class Model {
     }
 
     Model(Model&& other) noexcept {
-      vertices_.swap(other.vertices_);
       surfaces_.swap(other.surfaces_);
+      vertices_.swap(other.vertices_);
+      lines_.swap(other.lines_);
+      triangles_.swap(other.triangles_);
       reader_ = other.reader_;
       other.reader_ = nullptr;
     }
 
-    std::vector<_3DVertex>& GetVertexArray() {
-      return vertices_;
-    }
+    std::vector<_3DVertex> GetVertexArray() const { return vertices_; }
+
+    std::vector<_3DVertex> GetLineArray() const { return lines_; }
+
+    std::vector<_3DVertex> GetTriangleArray() const { return vertices_; }
 
     void LoadModel(const std::string& path) {
+
       try {
         std::cout << "start loading model...\n";
         reader_->LoadModel(path);
@@ -49,14 +55,51 @@ class Model {
         std::cout << "Loading Model Error.\n"; // delete after
         throw;
       }
+
       vertices_ = reader_->GetVertexBuffer();
       surfaces_ = reader_->GetSurfaceBuffer();
+      
+      lines_.reserve(CountLines(surfaces_));
+      MakeLines();
+      /* triangles_ = MakeTriangles(); */
 
-      print();
+      std::cout << "vertex size = " << vertices_.size() << std::endl;
+      std::cout << "surface size = " << surfaces_.size() << std::endl;
+      std::cout << "lines size = " << lines_.size() << std::endl;
+
     }
 
+    void MakeLines() {
+      lines_.clear();
+      for (const auto& surface : surfaces_) {
+        for (std::size_t j = 0; j < surface.size() - 1; ++j) {
+          lines_.push_back(vertices_[surface[j] - 1]);
+          lines_.push_back(vertices_[surface[j + 1] - 1]);
+        }
+        if (surface.size() > 2) {
+          lines_.push_back(vertices_[surface.back() - 1]);
+          lines_.push_back(vertices_[surface.front() - 1]);
+        }
+      }
+    }
+
+    void MakeTriangles() {
+      triangles_.clear();
+      for (const auto& surface : surfaces_) {
+        for (std::size_t j = 0; j < surface.size(); ++j) {
+        }
+      }
+    }
+
+     std::size_t CountLines(const std::vector<std::vector<int>>& surfaces) const {
+       std::size_t num = 0;
+       for (const auto& surface : surfaces)
+         num += (surface.size() > 2 ? surface.size() : 1) * 2;
+       std::cout << "Num = " << num << std::endl;
+       return num;
+     }
+
     void TransformModel(const s21::TransformMatrix& t) {
-      std::cout << "Transform:\n" << t << std::endl;
       for (_3DVertex& vertex : vertices_) {
         s21::TransformMatrix vec(vertex.x_, vertex.y_, vertex.z_);
         vec = t * vec;
@@ -64,6 +107,9 @@ class Model {
         vertex.y_ = vec(1, 0);
         vertex.z_ = vec(2, 0);
       }
+
+      MakeLines();
+
     }
 
     void print() {
@@ -72,20 +118,16 @@ class Model {
       for (const auto& i : vertices_) {
         std::cout << '(' << i.x_ << ", " << i.y_ << ", " << i.z_ << ")\n";
       }
-
-      std::cout << "Surface Buffer:\n";
-      for (const auto& i : surfaces_) {
-        for (const int j : i) 
-          std::cout << j << ' ';
-      std::cout << std::endl;
-      }
-      std::cout << std::endl;
       std::cout << std::endl;
     }
 
   private:
-    FileReader* reader_; // this stuff will parse file correctly
+    FileReader* reader_;
+
     std::vector<_3DVertex> vertices_;
+    std::vector<_3DVertex> lines_;
+    std::vector<_3DVertex> triangles_;
+
     std::vector<std::vector<int>> surfaces_;
 };
 

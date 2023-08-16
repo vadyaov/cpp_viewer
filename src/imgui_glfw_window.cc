@@ -60,6 +60,8 @@ ImguiWindow::ImguiWindow() {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
 
+  vertex_color = glm::vec4(0.3f, 0.5f, 0.25f, 1.0f);
+
 }
 
 void ImguiWindow::Run() /*const*/ {
@@ -82,7 +84,7 @@ void ImguiWindow::Run() /*const*/ {
     glViewport(0, 0, display_w, display_h);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    DrawModel();
+    DrawModel(GL_LINES);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -94,7 +96,10 @@ void ImguiWindow::SetingsWindow() {
     ImGui::Begin("Settings");
 
     if (ImGui::Button("Move")) MoveModel(-0.0f, -0.2f, 0.0f);
-    if (ImGui::Button("Rotate")) RotateModel(1.5708f, s21::TransformMatrixBuilder::Axis::Z);
+    if (ImGui::Button("Rotate")) {
+      RotateModel(0.5f, s21::TransformMatrixBuilder::Axis::Z);
+      RotateModel(0.5f, s21::TransformMatrixBuilder::Axis::X);
+    }
     if (ImGui::Button("Scale")) ScaleModel(0.7f, 0.7f, 0.7f);
 
     ImGui::ColorEdit3("Back Color", (float *)&clear_color);
@@ -125,10 +130,17 @@ int ImguiWindow::LoadModel(const std::string& path) {
   return 0; // Dont forget to return some pretty error class
 }
 
-int ImguiWindow::DrawModel() {
+static std::vector<_3DVertex> ChooseMethod(Model& m, GLuint type) {
+  if (type == GL_POINTS) return m.GetVertexArray();
+  if (type == GL_LINES) return m.GetLineArray();
+  return m.GetTriangleArray();
+}
+
+int ImguiWindow::DrawModel(GLuint type) {
   drawer_->MakeMVP();
-  drawer_->SetColor("MyColor", vertex_color.x, vertex_color.y, vertex_color.z, vertex_color.w);
-  drawer_->Draw(models.front().GetVertexArray());
+  drawer_->SetColor("MyColor", vertex_color.x, vertex_color.y, vertex_color.z,
+                                                               vertex_color.w);
+  drawer_->Draw(ChooseMethod(models.front(), type), type);
   return 0;
 }
 
