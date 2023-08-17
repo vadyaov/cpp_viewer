@@ -25,8 +25,8 @@ class ModelDrawer {
 
     ~ModelDrawer() {delete shader_;}
 
-    void SetColor(const std::string& name, float x, float y, float z, float w) {
-      shader_->setVec4(name, x, y, z, w);
+    void SetColor(const std::string& name, const glm::vec4& color) {
+      shader_->setVec4(name, color);
     }
 
     void Draw(const std::vector<_3DVertex>& vertices, GLuint type) {
@@ -39,7 +39,7 @@ class ModelDrawer {
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
       glBindVertexArray(vertex_array_);
 
-      glPointSize(5);
+      glPointSize(2);
 
       glDrawArrays(type, 0, vertices.size());
     }

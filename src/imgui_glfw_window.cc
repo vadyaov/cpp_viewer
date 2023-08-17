@@ -50,6 +50,9 @@ ImguiWindow::ImguiWindow() {
 
   drawer_ = new ModelDrawer();
 
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
@@ -60,23 +63,23 @@ ImguiWindow::ImguiWindow() {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
 
-  vertex_color = glm::vec4(0.3f, 0.5f, 0.25f, 1.0f);
-
 }
 
 void ImguiWindow::Run() /*const*/ {
 
-  LoadModel("models/cube.obj");
+  LoadModel("models/lamp.obj");
+  Settings s;
 
   while (!glfwWindowShouldClose(window)) {
-    glClearColor(clear_color.x, clear_color.y, clear_color.y, clear_color.z);
-    glClear(GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
+    glClearColor(s.clear_color.x, s.clear_color.y, s.clear_color.y,
+                                                              s.clear_color.z);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    SetingsWindow();
+    SetingsWindow(s);
 
     ImGui::Render();
     int display_w, display_h;
@@ -84,7 +87,7 @@ void ImguiWindow::Run() /*const*/ {
     glViewport(0, 0, display_w, display_h);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    DrawModel(GL_LINES);
+    DrawModel(s);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -92,7 +95,7 @@ void ImguiWindow::Run() /*const*/ {
 
 }
 
-void ImguiWindow::SetingsWindow() {
+void ImguiWindow::SetingsWindow(Settings& s) {
     ImGui::Begin("Settings");
 
     if (ImGui::Button("Move")) MoveModel(-0.0f, -0.2f, 0.0f);
@@ -102,8 +105,11 @@ void ImguiWindow::SetingsWindow() {
     }
     if (ImGui::Button("Scale")) ScaleModel(0.7f, 0.7f, 0.7f);
 
-    ImGui::ColorEdit3("Back Color", (float *)&clear_color);
-    ImGui::ColorEdit3("Vertex Color", (float *)&vertex_color);
+    ImGui::ColorEdit3("Back Color", (float *)&s.clear_color);
+
+    ImGui::ColorEdit3("Vertex Color", (float *)&s.vertex_color);
+    ImGui::ColorEdit3("Lines Color", (float *)&s.lines_color);
+    ImGui::ColorEdit3("Triangles Color", (float *)&s.triangles_color);
 
     ImGui::End();
 }
@@ -130,17 +136,23 @@ int ImguiWindow::LoadModel(const std::string& path) {
   return 0; // Dont forget to return some pretty error class
 }
 
-static std::vector<_3DVertex> ChooseMethod(Model& m, GLuint type) {
+static std::vector<_3DVertex> ChooseMethod(const Model& m, GLuint type) {
   if (type == GL_POINTS) return m.GetVertexArray();
   if (type == GL_LINES) return m.GetLineArray();
   return m.GetTriangleArray();
 }
 
-int ImguiWindow::DrawModel(GLuint type) {
+int ImguiWindow::DrawModel(Settings& s) {
   drawer_->MakeMVP();
-  drawer_->SetColor("MyColor", vertex_color.x, vertex_color.y, vertex_color.z,
-                                                               vertex_color.w);
-  drawer_->Draw(ChooseMethod(models.front(), type), type);
+
+  drawer_->SetColor("MyColor", s.vertex_color);
+  drawer_->Draw(ChooseMethod(models.front(), GL_POINTS), GL_POINTS);
+
+  drawer_->SetColor("MyColor", s.lines_color);
+  drawer_->Draw(ChooseMethod(models.front(), GL_LINES), GL_LINES);
+
+  /* drawer_->SetColor("MyColor", s.triangles_color); */
+  /* drawer_->Draw(ChooseMethod(models.front(), GL_TRIANGLES), GL_TRIANGLES); */
   return 0;
 }
 

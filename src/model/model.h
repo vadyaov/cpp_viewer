@@ -8,27 +8,10 @@
 #include "file_reader.h"
 #include "transform_matrix.h"
 
-/*
-  Модель - данные, по которым будет отрисовываться графика в OpenGL:
-    1. Массив вершин (x, y, z) в удобной форме.
-    2. Массив поверхностей тоже желательно в удобной форме.
-
-  Вопрос в том, какая форма удобная.
-    Если нужно отрисовывать точки - то достаточно просто массива вершин.
-    Если нужно отрисовывать линии - массив вершин для линий.
-    Если тужно рисовать треугол-и - массив вершин для треугольников.
-
-  Как вариант - иметь просто масив вершин и поверхностей внутри модели,
-    и далее в контроллере или еще где нибудь обрабатывать их так, как требуется.
-  В любом случае основа - v & f arrays.
-*/
-
 class Model {
   public:
     Model() : reader_{new FileReader()} {}
-    ~Model() {
-      delete reader_;
-    }
+    ~Model() { delete reader_; }
 
     Model(Model&& other) noexcept {
       surfaces_.swap(other.surfaces_);
@@ -43,7 +26,7 @@ class Model {
 
     std::vector<_3DVertex> GetLineArray() const { return lines_; }
 
-    std::vector<_3DVertex> GetTriangleArray() const { return vertices_; }
+    std::vector<_3DVertex> GetTriangleArray() const { return triangles_; }
 
     void LoadModel(const std::string& path) {
 
@@ -61,11 +44,14 @@ class Model {
       
       lines_.reserve(CountLines(surfaces_));
       MakeLines();
-      /* triangles_ = MakeTriangles(); */
+
+      /* triangles_.reserve(CountTriangles(surfaces_)); */
+      MakeTriangles();
 
       std::cout << "vertex size = " << vertices_.size() << std::endl;
       std::cout << "surface size = " << surfaces_.size() << std::endl;
       std::cout << "lines size = " << lines_.size() << std::endl;
+      std::cout << "triangle size = " << triangles_.size() << std::endl;
 
     }
 
@@ -86,16 +72,28 @@ class Model {
     void MakeTriangles() {
       triangles_.clear();
       for (const auto& surface : surfaces_) {
-        for (std::size_t j = 0; j < surface.size(); ++j) {
+        for (std::size_t j = 0; j < surface.size() - 2; ++j) {
+          triangles_.push_back(vertices_[surface[j] - 1]);
+          triangles_.push_back(vertices_[surface[j + 1] - 1]);
+          triangles_.push_back(vertices_[surface[j + 2] - 1]);
+        }
+        if (surface.size() > 3) {
+          triangles_.push_back(vertices_[surface[surface.size() - 3] - 1]);
+          triangles_.push_back(vertices_[surface[surface.size() - 2] - 1]);
+          triangles_.push_back(vertices_[surface.front() - 1]);
         }
       }
+
+      /* std::cout << "TRIANGLES:\n"; */
+      /* for (const auto& i : triangles_) */
+      /*   std::cout << i.x_ << ' ' << i.y_ << ' ' << i.z_ << std::endl; */
     }
 
      std::size_t CountLines(const std::vector<std::vector<int>>& surfaces) const {
        std::size_t num = 0;
        for (const auto& surface : surfaces)
          num += (surface.size() > 2 ? surface.size() : 1) * 2;
-       std::cout << "Num = " << num << std::endl;
+       /* std::cout << "Num = " << num << std::endl; */
        return num;
      }
 
@@ -109,6 +107,7 @@ class Model {
       }
 
       MakeLines();
+      MakeTriangles();
 
     }
 

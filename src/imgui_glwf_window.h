@@ -13,8 +13,22 @@
 
 class ImguiWindow {
   public:
-    glm::vec4 vertex_color;
-    glm::vec4 clear_color;
+    class Settings {
+      public:
+        Settings() : clear_color{0.1f, 0.1f, 0.25f, 1.0f},
+                     vertex_color{0.1f, 0.1f, 0.25f, 1.0f},
+                     lines_color{0.2f, 1.5f, 0.25f, 1.0f},
+                     triangles_color{0.215f, 0.5f, 0.11f, 1.0f} {
+        }
+                     
+        ~Settings() {
+        }
+
+      glm::vec4 clear_color;
+      glm::vec4 vertex_color;
+      glm::vec4 lines_color;
+      glm::vec4 triangles_color;
+    };
 
     ImguiWindow();
     ~ImguiWindow();
@@ -23,10 +37,10 @@ class ImguiWindow {
     int MoveModel(float, float, float);
     int RotateModel(float, int);
     int ScaleModel(float, float, float);
-    int DrawModel(GLuint);
+    int DrawModel(Settings&);
 
     void Run() /*const*/;
-    void SetingsWindow();
+    void SetingsWindow(Settings&);
 
   private:
     GLFWwindow* window;
