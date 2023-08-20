@@ -16,10 +16,8 @@ add_link_options(-fsanitize=address)
 add_subdirectory(imgui)
 include_directories(${PROJECT_SOURCE_DIR})
 add_executable(${APP_TARGET}
-  # core/affinity.c
-  # core/parseobj.c
-  # shaders/glshader.cpp
   imgui_glfw_window.cc
+  imgui/imgui-knobs.cpp
   main.cc)
 target_link_libraries(${APP_TARGET} imgui ${CMAKE_SOURCE_DIR}/matrix_lib/build/s21_matrix_oop.a)
 

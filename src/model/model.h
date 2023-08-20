@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <functional>
 
 #include "file_reader.h"
 #include "transform_matrix.h"
@@ -18,6 +17,7 @@ class Model {
       vertices_.swap(other.vertices_);
       lines_.swap(other.lines_);
       triangles_.swap(other.triangles_);
+
       reader_ = other.reader_;
       other.reader_ = nullptr;
     }
@@ -45,7 +45,7 @@ class Model {
       lines_.reserve(CountLines(surfaces_));
       MakeLines();
 
-      /* triangles_.reserve(CountTriangles(surfaces_)); */
+      triangles_.reserve(CountTriangles(surfaces_));
       MakeTriangles();
 
       std::cout << "vertex size = " << vertices_.size() << std::endl;
@@ -72,29 +72,39 @@ class Model {
     void MakeTriangles() {
       triangles_.clear();
       for (const auto& surface : surfaces_) {
+        if (surface.size() < 3) continue;
+
         for (std::size_t j = 0; j < surface.size() - 2; ++j) {
           triangles_.push_back(vertices_[surface[j] - 1]);
           triangles_.push_back(vertices_[surface[j + 1] - 1]);
           triangles_.push_back(vertices_[surface[j + 2] - 1]);
         }
         if (surface.size() > 3) {
-          triangles_.push_back(vertices_[surface[surface.size() - 3] - 1]);
           triangles_.push_back(vertices_[surface[surface.size() - 2] - 1]);
+          triangles_.push_back(vertices_[surface[surface.size() - 1] - 1]);
           triangles_.push_back(vertices_[surface.front() - 1]);
         }
       }
-
-      /* std::cout << "TRIANGLES:\n"; */
-      /* for (const auto& i : triangles_) */
-      /*   std::cout << i.x_ << ' ' << i.y_ << ' ' << i.z_ << std::endl; */
     }
 
      std::size_t CountLines(const std::vector<std::vector<int>>& surfaces) const {
        std::size_t num = 0;
-       for (const auto& surface : surfaces)
-         num += (surface.size() > 2 ? surface.size() : 1) * 2;
-       /* std::cout << "Num = " << num << std::endl; */
-       return num;
+       for (const auto& surface : surfaces) {
+         if (surface.size() < 2) continue;
+         num += surface.size() == 2 ? 1 : surface.size();
+       }
+
+       return num * 2;
+     }
+
+     std::size_t CountTriangles(const std::vector<std::vector<int>>& surfaces) const {
+       std::size_t num = 0;
+       for (const auto& surface : surfaces) {
+         if (surface.size() < 3) continue;
+         num += surface.size() == 3 ? 1 : surface.size() - 1;
+       }
+
+       return num * 3;
      }
 
     void TransformModel(const s21::TransformMatrix& t) {

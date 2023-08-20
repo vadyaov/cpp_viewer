@@ -1,4 +1,7 @@
 #include "imgui_glwf_window.h"
+
+#include "imgui/imgui-knobs.h"
+
 #include "model/transform_matrix_builder.h"
 
 #include <iostream>
@@ -57,7 +60,6 @@ ImguiWindow::ImguiWindow() {
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -67,8 +69,8 @@ ImguiWindow::ImguiWindow() {
 
 void ImguiWindow::Run() /*const*/ {
 
-  LoadModel("models/lamp.obj");
   Settings s;
+  /* LoadModel("models/Alien Animal.obj", s); */
 
   while (!glfwWindowShouldClose(window)) {
     glClearColor(s.clear_color.x, s.clear_color.y, s.clear_color.y,
@@ -80,6 +82,7 @@ void ImguiWindow::Run() /*const*/ {
     ImGui::NewFrame();
 
     SetingsWindow(s);
+    DrawModel(s);
 
     ImGui::Render();
     int display_w, display_h;
@@ -87,7 +90,6 @@ void ImguiWindow::Run() /*const*/ {
     glViewport(0, 0, display_w, display_h);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    DrawModel(s);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -95,23 +97,88 @@ void ImguiWindow::Run() /*const*/ {
 
 }
 
+static std::string GetFilename(const std::string& full_path) {
+  return full_path.substr(full_path.find_last_of('/') + 1);
+}
+
 void ImguiWindow::SetingsWindow(Settings& s) {
     ImGui::Begin("Settings");
 
-    if (ImGui::Button("Move")) MoveModel(-0.0f, -0.2f, 0.0f);
-    if (ImGui::Button("Rotate")) {
-      RotateModel(0.5f, s21::TransformMatrixBuilder::Axis::Z);
-      RotateModel(0.5f, s21::TransformMatrixBuilder::Axis::X);
+    if (ImGui::Button("Browse")) s.file_dialog.Open();
+    ImGui::SameLine(0.0f, 10.0f);
+    ImGui::Text("%s", s.GetFilename().c_str());
+
+    static float value0 = 0, value1 = 0;
+    if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
+      RotateModel((value1 - value0) * 0.0174533f, s21::TransformMatrixBuilder::Axis::X, s.counter);
+      value1 = value0;
     }
-    if (ImGui::Button("Scale")) ScaleModel(0.7f, 0.7f, 0.7f);
+    ImGui::SameLine();
+    static float value2 = 0, value3 = 0;
+    if (ImGuiKnobs::Knob("Y Rot", &value2, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
+      RotateModel((value3 - value2) * 0.0174533f, s21::TransformMatrixBuilder::Axis::Y, s.counter);
+      value3 = value2;
+    }
+    ImGui::SameLine();
+    static float value4 = 0, value5 = 0;
+    if (ImGuiKnobs::Knob("Z Rot", &value4, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
+      RotateModel((value5 - value4) * 0.0174533f, s21::TransformMatrixBuilder::Axis::Z, s.counter);
+      value5 = value4;
+    }
+
+
+    ImGui::PushButtonRepeat(true);
+
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
+    if (ImGui::ArrowButton("##up", ImGuiDir_Up) || ImGui::IsKeyPressed(ImGuiKey_UpArrow))
+      MoveModel(0.0f, 0.2f, 0.0f, s.counter);
+    if (ImGui::ArrowButton("##left", ImGuiDir_Left) || ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
+      MoveModel(-0.2f, 0.0f, 0.0f, s.counter);
+    ImGui::SameLine(0.0f, 20.0f);
+    if (ImGui::ArrowButton("##right", ImGuiDir_Right) || ImGui::IsKeyPressed(ImGuiKey_RightArrow))
+      MoveModel(0.2f, 0.0f, 0.0f, s.counter);
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
+    if (ImGui::ArrowButton("##down", ImGuiDir_Down) || ImGui::IsKeyPressed(ImGuiKey_DownArrow))
+      MoveModel(0.0f, -0.2f, 0.0f, s.counter);
+    ImGui::PopButtonRepeat();
+
+    /* Придумать принцип работы слайдера скейлинга, чтобы оно работало адекватно, пока не пойму как. */
+    /* Как хочу: крутишь вправо - модель увеличивается в 'x' раз (что делать если разница = 1?) */
+    /*           крутишь влево  - модель уменьшается в 'x' раз (что делать если разница = 1?) */
+    /* Изначально слайдер в нуле - оригинальный размер модели. */
+    /* Если слайдер оказывается в нуле в какой либо момент - размер модели оригинальный. */
+
+    /* ImGui::SameLine(0.0f, 40.0f); */
+    /* static float scale = 0.0; */
+    /* if (ImGuiKnobs::Knob("Scale", &scale, -10.0f, 10.0f, 0.5f, "%1.0f", ImGuiKnobVariant_WiperDot)) { */
+    /*   ScaleModel(scale, scale, scale, s.counter); */
+    /* } */
+
+    if (ImGui::Button("Scale")) {
+      ScaleModel(0.3f, 0.3f, 0.3f, s.counter);
+    }
 
     ImGui::ColorEdit3("Back Color", (float *)&s.clear_color);
-
     ImGui::ColorEdit3("Vertex Color", (float *)&s.vertex_color);
     ImGui::ColorEdit3("Lines Color", (float *)&s.lines_color);
     ImGui::ColorEdit3("Triangles Color", (float *)&s.triangles_color);
 
+    ImGui::SliderInt("Models", &s.counter, 0, models.size() - 1);
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+              1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
     ImGui::End();
+
+    s.file_dialog.Display();
+    if (s.file_dialog.HasSelected()) {
+      std::string name = GetFilename(s.file_dialog.GetSelected().string());
+      std::string path = std::string("models/") + name;
+      if (std::find(s.filenames.begin(), s.filenames.end(), name) == s.filenames.end()) {
+        LoadModel(path, s);
+        s.filenames.push_back(name);
+      }
+      s.file_dialog.ClearSelected();
+    }
 }
 
 ImguiWindow::~ImguiWindow() {
@@ -124,7 +191,7 @@ ImguiWindow::~ImguiWindow() {
   delete drawer_;
 }
 
-int ImguiWindow::LoadModel(const std::string& path) {
+int ImguiWindow::LoadModel(const std::string& path, Settings& s) {
   Model model;
   try {
     model.LoadModel(path);
@@ -142,35 +209,43 @@ static std::vector<_3DVertex> ChooseMethod(const Model& m, GLuint type) {
   return m.GetTriangleArray();
 }
 
-int ImguiWindow::DrawModel(Settings& s) {
+int ImguiWindow::DrawModel(const Settings& s) {
+  if (models.empty()) return 0;
+
   drawer_->MakeMVP();
 
   drawer_->SetColor("MyColor", s.vertex_color);
-  drawer_->Draw(ChooseMethod(models.front(), GL_POINTS), GL_POINTS);
+  drawer_->Draw(ChooseMethod(models[s.counter], GL_POINTS), GL_POINTS);
 
   drawer_->SetColor("MyColor", s.lines_color);
-  drawer_->Draw(ChooseMethod(models.front(), GL_LINES), GL_LINES);
+  drawer_->Draw(ChooseMethod(models[s.counter], GL_LINES), GL_LINES);
 
-  /* drawer_->SetColor("MyColor", s.triangles_color); */
-  /* drawer_->Draw(ChooseMethod(models.front(), GL_TRIANGLES), GL_TRIANGLES); */
+  drawer_->SetColor("MyColor", s.triangles_color);
+  drawer_->Draw(ChooseMethod(models[s.counter], GL_TRIANGLES), GL_TRIANGLES);
   return 0;
 }
 
-int ImguiWindow::MoveModel(float ax, float ay, float az) {
+int ImguiWindow::MoveModel(float ax, float ay, float az, int position) {
+  if (models.empty()) return 0; // SOME BAD SITUATION
+
   s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateMoveMatrix(ax, ay, az);
-  models.front().TransformModel(m);
+  models[position].TransformModel(m);
   return 0;
 }
 
 
-int ImguiWindow::RotateModel(float angle, int axis) {
+int ImguiWindow::RotateModel(float angle, int axis, int position) {
+  if (models.empty()) return 0; // SOME BAD SITUATION
+
   s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateRotationMatrix(angle, axis);
-  models.front().TransformModel(m);
+  models[position].TransformModel(m);
   return 0;
 }
 
-int ImguiWindow::ScaleModel(float sx, float sy, float sz) {
+int ImguiWindow::ScaleModel(float sx, float sy, float sz, int position) {
+  if (models.empty()) return 0; // SOME BAD SITUATION
+
   s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateScaleMatrix(sx, sy, sz);
-  models.front().TransformModel(m);
+  models[position].TransformModel(m);
   return 0;
 }

@@ -7,7 +7,7 @@ namespace s21 {
   class TransformMatrixBuilder {
     public:
       enum Axis {X, Y, Z};
-      // тут сложнее, три разных матрицы в зависмости от оси вращения
+
       static TransformMatrix CreateRotationMatrix(float angle, int axis) {
         TransformMatrix matrix;
 
