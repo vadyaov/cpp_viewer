@@ -126,6 +126,13 @@ void ImguiWindow::SetingsWindow(Settings& s) {
       value5 = value4;
     }
 
+    ImGui::SameLine(0.0f, 40.0f);
+    static float scale = 100.0f, scale0 = scale;
+    if (ImGuiKnobs::Knob("Scale", &scale, 1.0f, 300.0f, 1.0f, "%1.0f %", ImGuiKnobVariant_WiperDot)) {
+      scale > scale0 ? ScaleModel(1.0f + (scale - scale0) / scale0, s.counter) :
+                       ScaleModel(1.0f - (scale0 - scale) / scale0, s.counter);
+      scale0 = scale;
+    }
 
     ImGui::PushButtonRepeat(true);
 
@@ -147,16 +154,6 @@ void ImguiWindow::SetingsWindow(Settings& s) {
     /*           крутишь влево  - модель уменьшается в 'x' раз (что делать если разница = 1?) */
     /* Изначально слайдер в нуле - оригинальный размер модели. */
     /* Если слайдер оказывается в нуле в какой либо момент - размер модели оригинальный. */
-
-    /* ImGui::SameLine(0.0f, 40.0f); */
-    /* static float scale = 0.0; */
-    /* if (ImGuiKnobs::Knob("Scale", &scale, -10.0f, 10.0f, 0.5f, "%1.0f", ImGuiKnobVariant_WiperDot)) { */
-    /*   ScaleModel(scale, scale, scale, s.counter); */
-    /* } */
-
-    if (ImGui::Button("Scale")) {
-      ScaleModel(0.3f, 0.3f, 0.3f, s.counter);
-    }
 
     ImGui::ColorEdit3("Back Color", (float *)&s.clear_color);
     ImGui::ColorEdit3("Vertex Color", (float *)&s.vertex_color);
@@ -242,10 +239,10 @@ int ImguiWindow::RotateModel(float angle, int axis, int position) {
   return 0;
 }
 
-int ImguiWindow::ScaleModel(float sx, float sy, float sz, int position) {
+int ImguiWindow::ScaleModel(float coef, int position) {
   if (models.empty()) return 0; // SOME BAD SITUATION
 
-  s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateScaleMatrix(sx, sy, sz);
+  s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateScaleMatrix(coef, coef, coef);
   models[position].TransformModel(m);
   return 0;
 }

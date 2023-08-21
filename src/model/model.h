@@ -74,15 +74,12 @@ class Model {
       for (const auto& surface : surfaces_) {
         if (surface.size() < 3) continue;
 
-        for (std::size_t j = 0; j < surface.size() - 2; ++j) {
+        // simple triangulation
+        std::size_t j = 1;
+        for (; j < surface.size() - 1; ++j) {
+          triangles_.push_back(vertices_[surface[0] - 1]);
           triangles_.push_back(vertices_[surface[j] - 1]);
           triangles_.push_back(vertices_[surface[j + 1] - 1]);
-          triangles_.push_back(vertices_[surface[j + 2] - 1]);
-        }
-        if (surface.size() > 3) {
-          triangles_.push_back(vertices_[surface[surface.size() - 2] - 1]);
-          triangles_.push_back(vertices_[surface[surface.size() - 1] - 1]);
-          triangles_.push_back(vertices_[surface.front() - 1]);
         }
       }
     }

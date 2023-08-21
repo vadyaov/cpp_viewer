@@ -50,7 +50,7 @@ class ImguiWindow {
     int LoadModel(const std::string& path, Settings& s);
     int MoveModel(float, float, float, int);
     int RotateModel(float, int, int);
-    int ScaleModel(float, float, float, int);
+    int ScaleModel(float, int);
     int DrawModel(const Settings&);
 
     void Run() /*const*/;
