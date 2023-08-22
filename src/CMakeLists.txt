@@ -21,9 +21,6 @@ add_executable(${APP_TARGET}
   main.cc)
 target_link_libraries(${APP_TARGET} imgui ${CMAKE_SOURCE_DIR}/matrix_lib/build/s21_matrix_oop.a)
 
-# find_package(SDL2 REQUIRED)
-# include_directories(${SDL2_INCLUDE_DIRS})
-
 # glfw
 find_package(glfw3 REQUIRED)
 include_directories(${GLFW_INCLUDE_DIRS})
@@ -36,6 +33,10 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 # glew
 find_package(GLEW 2.0 REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
+
+# SDL
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
 
 if (APPLE)
     # find_library(COCOA_LIBRARY Cocoa)
@@ -51,5 +52,5 @@ target_link_libraries(
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
         ${EXTRA_LIBS}
-        # ${SDL2_LIBRARIES}
+        ${SDL2_LIBRARIES}
 )

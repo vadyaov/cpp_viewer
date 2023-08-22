@@ -5,6 +5,7 @@
 #include "model/transform_matrix_builder.h"
 
 #include <iostream>
+#include <SDL2/SDL_surface.h>
 
 static void ErrorCallback(const int error, const char *description) {
   std::cerr << "Glfw Error " << error << ": " << description;
@@ -73,8 +74,8 @@ void ImguiWindow::Run() /*const*/ {
   /* LoadModel("models/Alien Animal.obj", s); */
 
   while (!glfwWindowShouldClose(window)) {
-    glClearColor(s.clear_color.x, s.clear_color.y, s.clear_color.y,
-                                                              s.clear_color.z);
+    glClearColor(s.clear_color.x, s.clear_color.y, s.clear_color.z,
+                                                              s.clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -108,6 +109,8 @@ void ImguiWindow::SetingsWindow(Settings& s) {
     ImGui::SameLine(0.0f, 10.0f);
     ImGui::Text("%s", s.GetFilename().c_str());
 
+    ImGui::SliderInt("Models", &s.counter, 0, models.size() - 1); // bag when 0 models loaded
+
     static float value0 = 0, value1 = 0;
     if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
       RotateModel((value1 - value0) * 0.0174533f, s21::TransformMatrixBuilder::Axis::X, s.counter);
@@ -134,33 +137,69 @@ void ImguiWindow::SetingsWindow(Settings& s) {
       scale0 = scale;
     }
 
+    ImGui::SliderFloat("Move Speed", &s.move_speed, 0.1f, 5.0f);
+
     ImGui::PushButtonRepeat(true);
 
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
-    if (ImGui::ArrowButton("##up", ImGuiDir_Up) || ImGui::IsKeyPressed(ImGuiKey_UpArrow))
-      MoveModel(0.0f, 0.2f, 0.0f, s.counter);
-    if (ImGui::ArrowButton("##left", ImGuiDir_Left) || ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
-      MoveModel(-0.2f, 0.0f, 0.0f, s.counter);
-    ImGui::SameLine(0.0f, 20.0f);
-    if (ImGui::ArrowButton("##right", ImGuiDir_Right) || ImGui::IsKeyPressed(ImGuiKey_RightArrow))
-      MoveModel(0.2f, 0.0f, 0.0f, s.counter);
-    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
-    if (ImGui::ArrowButton("##down", ImGuiDir_Down) || ImGui::IsKeyPressed(ImGuiKey_DownArrow))
-      MoveModel(0.0f, -0.2f, 0.0f, s.counter);
-    ImGui::PopButtonRepeat();
+    if (ImGui::ArrowButton("##up", ImGuiDir_Up) ||
+        ImGui::IsKeyPressed(ImGuiKey_UpArrow) || ImGui::IsKeyPressed(ImGuiKey_W))
+      MoveModel(0.0f, s.move_speed, 0.0f, s.counter);
+    ImGui::SameLine(0.0f, 50.0f);
+    ImGui::Checkbox("GL_POINTS", &s.points);
+    ImGui::SameLine();
 
-    /* Придумать принцип работы слайдера скейлинга, чтобы оно работало адекватно, пока не пойму как. */
-    /* Как хочу: крутишь вправо - модель увеличивается в 'x' раз (что делать если разница = 1?) */
-    /*           крутишь влево  - модель уменьшается в 'x' раз (что делать если разница = 1?) */
-    /* Изначально слайдер в нуле - оригинальный размер модели. */
-    /* Если слайдер оказывается в нуле в какой либо момент - размер модели оригинальный. */
+    if (ImGui::Checkbox("Round Points", &s.rounded)) {
+      if (s.rounded == true) {
+          glEnable(GL_POINT_SMOOTH);
+          glEnable(GL_BLEND);
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      } else {
+          glDisable(GL_POINT_SMOOTH);
+          glDisable(GL_BLEND);
+      }
+    }
+
+    if (ImGui::ArrowButton("##left", ImGuiDir_Left) ||
+        ImGui::IsKeyPressed(ImGuiKey_LeftArrow) || ImGui::IsKeyPressed(ImGuiKey_A))
+      MoveModel(-s.move_speed, 0.0f, 0.0f, s.counter);
+    ImGui::SameLine(0.0f, 20.0f);
+    if (ImGui::ArrowButton("##right", ImGuiDir_Right) ||
+        ImGui::IsKeyPressed(ImGuiKey_RightArrow) || ImGui::IsKeyPressed(ImGuiKey_D))
+      MoveModel(s.move_speed, 0.0f, 0.0f, s.counter);
+
+    ImGui::SameLine(0.0f, 30.0f);
+    ImGui::Checkbox("GL_LINES", &s.lines);
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
+    if (ImGui::ArrowButton("##down", ImGuiDir_Down)
+        || ImGui::IsKeyPressed(ImGuiKey_DownArrow) || ImGui::IsKeyPressed(ImGuiKey_S))
+      MoveModel(0.0f, -s.move_speed, 0.0f, s.counter);
+
+    ImGui::SameLine(0.0f, 50.0f);
+    ImGui::Checkbox("GL_TRIANGLES", &s.triangles);
+
+    ImGui::PopButtonRepeat();
 
     ImGui::ColorEdit3("Back Color", (float *)&s.clear_color);
     ImGui::ColorEdit3("Vertex Color", (float *)&s.vertex_color);
     ImGui::ColorEdit3("Lines Color", (float *)&s.lines_color);
     ImGui::ColorEdit3("Triangles Color", (float *)&s.triangles_color);
 
-    ImGui::SliderInt("Models", &s.counter, 0, models.size() - 1);
+    ImGui::SliderFloat("Point Size", &s.point_size, 0, 15.0f);
+
+    if (ImGui::SliderFloat("Line Width", &s.line_width, 0, 10.0f)) {
+      glLineWidth(s.line_width);
+    }
+
+
+    ImGui::Checkbox("ORTHOGRAPHIC PROJECTION", &s.ortho);
+
+    if (ImGui::Button("ScreenShot")) MakeScreenShot(s.bmp, s.jpg);
+    ImGui::SameLine();
+    ImGui::Checkbox("BMP", &s.bmp);
+    ImGui::SameLine();
+    ImGui::Checkbox("JPG", &s.jpg);
+
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
               1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
@@ -176,6 +215,30 @@ void ImguiWindow::SetingsWindow(Settings& s) {
       }
       s.file_dialog.ClearSelected();
     }
+}
+
+void ImguiWindow::MakeScreenShot(bool bmp, bool jpg) {
+  int height = 0;
+  int width = 0;
+  glfwGetFramebufferSize(window, &width, &height);
+
+  std::cout << "height = " << height << "\nwidth = " << width << std::endl;
+
+  SDL_Surface *temp = SDL_CreateRGBSurface(
+      SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
+  if (temp == NULL) ErrorCallback(1, "CreateRGBSurface failed");
+
+  char *pixels = static_cast<char *>(calloc(width * height * 3, 1));
+  if (pixels) {
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+    for (int i = 0; i < height; i++)
+      std::memcpy((static_cast<char *>(temp->pixels)) + temp->pitch * i,
+                  pixels + 3 * width * (height - i - 1), width * 3);
+    if (bmp) SDL_SaveBMP(temp, "ScreenShot.bmp");
+    if (jpg) SDL_SaveBMP(temp, "ScreenShot.jpeg");
+    SDL_FreeSurface(temp);
+    free(pixels);
+  }
 }
 
 ImguiWindow::~ImguiWindow() {
@@ -200,25 +263,28 @@ int ImguiWindow::LoadModel(const std::string& path, Settings& s) {
   return 0; // Dont forget to return some pretty error class
 }
 
-static std::vector<_3DVertex> ChooseMethod(const Model& m, GLuint type) {
-  if (type == GL_POINTS) return m.GetVertexArray();
-  if (type == GL_LINES) return m.GetLineArray();
-  return m.GetTriangleArray();
-}
-
 int ImguiWindow::DrawModel(const Settings& s) {
   if (models.empty()) return 0;
 
-  drawer_->MakeMVP();
+  drawer_->MakeMVP(s.ortho);
 
-  drawer_->SetColor("MyColor", s.vertex_color);
-  drawer_->Draw(ChooseMethod(models[s.counter], GL_POINTS), GL_POINTS);
+  if (s.points) {
 
-  drawer_->SetColor("MyColor", s.lines_color);
-  drawer_->Draw(ChooseMethod(models[s.counter], GL_LINES), GL_LINES);
+    drawer_->SetSize("PointSize", s.point_size);
+    drawer_->SetColor("MyColor", s.vertex_color);
+    drawer_->Draw(models[s.counter].GetVertexArray(), GL_POINTS);
+  }
 
-  drawer_->SetColor("MyColor", s.triangles_color);
-  drawer_->Draw(ChooseMethod(models[s.counter], GL_TRIANGLES), GL_TRIANGLES);
+  if (s.lines) {
+    drawer_->SetColor("MyColor", s.lines_color);
+    drawer_->Draw(models[s.counter].GetLineArray(), GL_LINES);
+  }
+
+  if (s.triangles) {
+    drawer_->SetColor("MyColor", s.triangles_color);
+    drawer_->Draw(models[s.counter].GetTriangleArray(), GL_TRIANGLES);
+  }
+
   return 0;
 }
 
