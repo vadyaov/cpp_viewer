@@ -71,7 +71,7 @@ ImguiWindow::ImguiWindow() {
 void ImguiWindow::Run() /*const*/ {
 
   Settings s;
-  /* LoadModel("models/Alien Animal.obj", s); */
+  LoadModel(std::string("models/") + std::string(s.filenames.at(0)), s);
 
   while (!glfwWindowShouldClose(window)) {
     glClearColor(s.clear_color.x, s.clear_color.y, s.clear_color.z,
@@ -109,7 +109,7 @@ void ImguiWindow::SetingsWindow(Settings& s) {
     ImGui::SameLine(0.0f, 10.0f);
     ImGui::Text("%s", s.GetFilename().c_str());
 
-    ImGui::SliderInt("Models", &s.counter, 0, models.size() - 1); // bag when 0 models loaded
+    ImGui::SliderInt("Models", &s.counter, 0, models.empty() ? 0 : models.size() - 1); // bag when 0 models loaded
 
     static float value0 = 0, value1 = 0;
     if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
