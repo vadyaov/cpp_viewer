@@ -29,7 +29,7 @@ add_executable(${APP_TARGET}
   imgui_glfw_window.cc
   imgui/imgui-knobs.cpp
   main.cc)
-target_link_libraries(${APP_TARGET} imgui ${CMAKE_SOURCE_DIR}/matrix_lib/build/s21_matrix_oop.a)
+target_link_libraries(${APP_TARGET} imgui ${CMAKE_SOURCE_DIR}/s21_matrix_oop.a)
 
 # glfw
 find_package(glfw3 REQUIRED)

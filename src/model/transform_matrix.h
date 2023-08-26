@@ -26,18 +26,12 @@ namespace s21 {
       }
 
       TransformMatrix(const TransformMatrix& other) : matr_{other.matr_} {}
-      /* TransformMatrix(TransformMatrix&& other) noexcept : matr_{std::move(other.matr_)} {} */
 
       TransformMatrix& operator=(const TransformMatrix& other) {
         matr_ = other.matr_;
         return *this;
       }
       
-      /* TransformMatrix& operator=(TransformMatrix&& other) noexcept { */
-      /*   std::swap(matr_, other.matr_); */
-      /*   return *this; */
-      /* } */
-
       double& operator()(int i, int j) { return matr_(i, j); }
 
       TransformMatrix operator*(const TransformMatrix& other) const {
@@ -45,12 +39,10 @@ namespace s21 {
         return res;
       }
         
-      /* Point TransformPoint(const Point& point) const; */
-
-      friend std::ostream& operator<<(std::ostream& os, const TransformMatrix& matrix) {
-        os << matrix.matr_;
-        return os;
-      }
+      /* friend std::ostream& operator<<(std::ostream& os, const TransformMatrix& matrix) { */
+      /*   os << matrix.matr_; */
+      /*   return os; */
+      /* } */
 
     private:
       S21Matrix matr_;

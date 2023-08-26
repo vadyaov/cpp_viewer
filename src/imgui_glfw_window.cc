@@ -4,6 +4,8 @@
 
 #include "model/transform_matrix_builder.h"
 
+#include "gif.h"
+
 #include <iostream>
 #include <SDL2/SDL_surface.h>
 
@@ -17,7 +19,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action,
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-ImguiWindow::ImguiWindow() {
+ImguiWindow::ImguiWindow() : ctr_{new Controller()} {
 
   glfwSetErrorCallback(ErrorCallback);
   if (!glfwInit())
@@ -68,10 +70,10 @@ ImguiWindow::ImguiWindow() {
 
 }
 
-void ImguiWindow::Run() /*const*/ {
+void ImguiWindow::Run() const {
 
   Settings s;
-  LoadModel(std::string("models/") + std::string(s.filenames.at(0)), s);
+  LoadModel(std::string("models/") + std::string(s.filenames.at(0)));
 
   while (!glfwWindowShouldClose(window)) {
     glClearColor(s.clear_color.x, s.clear_color.y, s.clear_color.z,
@@ -82,8 +84,8 @@ void ImguiWindow::Run() /*const*/ {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    SetingsWindow(s);
     DrawModel(s);
+    SetingsWindow(s);
 
     ImGui::Render();
     int display_w, display_h;
@@ -98,18 +100,20 @@ void ImguiWindow::Run() /*const*/ {
 
 }
 
-static std::string GetFilename(const std::string& full_path) {
-  return full_path.substr(full_path.find_last_of('/') + 1);
-}
-
-void ImguiWindow::SetingsWindow(Settings& s) {
+void ImguiWindow::SetingsWindow(Settings& s) const {
     ImGui::Begin("Settings");
 
     if (ImGui::Button("Browse")) s.file_dialog.Open();
     ImGui::SameLine(0.0f, 10.0f);
     ImGui::Text("%s", s.GetFilename().c_str());
 
-    ImGui::SliderInt("Models", &s.counter, 0, models.empty() ? 0 : models.size() - 1); // bag when 0 models loaded
+    if (!ctr_->Empty()) {
+      ImGui::Text("%zu vertices; ", ctr_->VertexNum(s.counter));
+      ImGui::SameLine();
+      ImGui::Text("%zu elements", ctr_->SurfaceNum(s.counter));
+    }
+
+    ImGui::SliderInt("Models", &s.counter, 0, ctr_->Empty() ? 0 : ctr_->HowMany() - 1); // bag when 0 models loaded
 
     static float value0 = 0, value1 = 0;
     if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
@@ -200,6 +204,8 @@ void ImguiWindow::SetingsWindow(Settings& s) {
     ImGui::SameLine();
     ImGui::Checkbox("JPG", &s.jpg);
 
+    if (ImGui::Button("GIF")) MakeGif(100);
+
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
               1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
@@ -207,22 +213,21 @@ void ImguiWindow::SetingsWindow(Settings& s) {
 
     s.file_dialog.Display();
     if (s.file_dialog.HasSelected()) {
-      std::string name = GetFilename(s.file_dialog.GetSelected().string());
+      std::string name = s.file_dialog.GetSelected().string();
+      name = name.substr(name.find_last_of('/') + 1);
       std::string path = std::string("models/") + name;
       if (std::find(s.filenames.begin(), s.filenames.end(), name) == s.filenames.end()) {
-        LoadModel(path, s);
+        LoadModel(path);
         s.filenames.push_back(name);
       }
       s.file_dialog.ClearSelected();
     }
 }
 
-void ImguiWindow::MakeScreenShot(bool bmp, bool jpg) {
+void ImguiWindow::MakeScreenShot(bool bmp, bool jpg) const {
   int height = 0;
   int width = 0;
   glfwGetFramebufferSize(window, &width, &height);
-
-  std::cout << "height = " << height << "\nwidth = " << width << std::endl;
 
   SDL_Surface *temp = SDL_CreateRGBSurface(
       SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
@@ -241,6 +246,22 @@ void ImguiWindow::MakeScreenShot(bool bmp, bool jpg) {
   }
 }
 
+void ImguiWindow::MakeGif(int frames) const {
+  int height = 0;
+  int width = 0;
+  glfwGetFramebufferSize(window, &width, &height);
+
+  GifWriter gif_writer;
+  GifBegin(&gif_writer, "Animation.gif", width, height, 100);
+
+  for (int frame = 0; frame < frames; ++frame) {
+    std::vector<std::uint8_t> pixels(width * height * 3);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
+    GifWriteFrame(&gif_writer, pixels.data(), width, height, 100);
+  }
+  GifEnd(&gif_writer);
+}
+
 ImguiWindow::~ImguiWindow() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
@@ -249,66 +270,64 @@ ImguiWindow::~ImguiWindow() {
   glfwDestroyWindow(window);
   glfwTerminate();
   delete drawer_;
+  delete ctr_;
 }
 
-int ImguiWindow::LoadModel(const std::string& path, Settings& s) {
-  Model model;
+int ImguiWindow::LoadModel(const std::string& path) const {
   try {
-    model.LoadModel(path);
+    ctr_->AddModel(path);
   } catch (const std::exception& e) {
     ErrorCallback(-1, e.what());
     return -1;
   }
-  models.push_back(std::move(model));
   return 0; // Dont forget to return some pretty error class
 }
 
-int ImguiWindow::DrawModel(const Settings& s) {
-  if (models.empty()) return 0;
+int ImguiWindow::DrawModel(const Settings& s) const {
+  if (ctr_->Empty()) return 0;
 
   drawer_->MakeMVP(s.ortho);
 
   if (s.points) {
-
     drawer_->SetSize("PointSize", s.point_size);
     drawer_->SetColor("MyColor", s.vertex_color);
-    drawer_->Draw(models[s.counter].GetVertexArray(), GL_POINTS);
+    drawer_->Draw(ctr_->GetVertices(s.counter), GL_POINTS);
   }
 
   if (s.lines) {
     drawer_->SetColor("MyColor", s.lines_color);
-    drawer_->Draw(models[s.counter].GetLineArray(), GL_LINES);
+    drawer_->Draw(ctr_->GetLines(s.counter), GL_LINES);
   }
 
   if (s.triangles) {
     drawer_->SetColor("MyColor", s.triangles_color);
-    drawer_->Draw(models[s.counter].GetTriangleArray(), GL_TRIANGLES);
+    drawer_->Draw(ctr_->GetTriangles(s.counter), GL_TRIANGLES);
   }
 
   return 0;
 }
 
-int ImguiWindow::MoveModel(float ax, float ay, float az, int position) {
-  if (models.empty()) return 0; // SOME BAD SITUATION
+int ImguiWindow::MoveModel(float ax, float ay, float az, int position) const {
+  if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
   s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateMoveMatrix(ax, ay, az);
-  models[position].TransformModel(m);
+  ctr_->Transform(m, position);
   return 0;
 }
 
 
-int ImguiWindow::RotateModel(float angle, int axis, int position) {
-  if (models.empty()) return 0; // SOME BAD SITUATION
+int ImguiWindow::RotateModel(float angle, int axis, int position) const {
+  if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
   s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateRotationMatrix(angle, axis);
-  models[position].TransformModel(m);
+  ctr_->Transform(m, position);
   return 0;
 }
 
-int ImguiWindow::ScaleModel(float coef, int position) {
-  if (models.empty()) return 0; // SOME BAD SITUATION
+int ImguiWindow::ScaleModel(float coef, int position) const {
+  if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
   s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateScaleMatrix(coef, coef, coef);
-  models[position].TransformModel(m);
+  ctr_->Transform(m, position);
   return 0;
 }

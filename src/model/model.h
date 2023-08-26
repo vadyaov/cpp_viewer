@@ -28,6 +28,9 @@ class Model {
 
     std::vector<_3DVertex> GetTriangleArray() const { return triangles_; }
 
+    std::size_t VertexSize() {return vertices_.size();}
+    std::size_t SurfaceSize() {return surfaces_.size();}
+
     void LoadModel(const std::string& path) {
 
       try {

@@ -16,6 +16,8 @@ using json = nlohmann::json;
 #include "model/model.h"
 #include "model/model_drawer.h"
 
+#include "controller/ctr.h"
+
 class ImguiWindow {
   public:
     class Settings {
@@ -148,21 +150,23 @@ class ImguiWindow {
     ImguiWindow();
     ~ImguiWindow();
 
-    int LoadModel(const std::string& path, Settings& s);
-    int MoveModel(float, float, float, int);
-    int RotateModel(float, int, int);
-    int ScaleModel(float, int);
-    int DrawModel(const Settings&);
-    void MakeScreenShot(bool, bool);
+    int LoadModel(const std::string& path) const;
+    int MoveModel(float, float, float, int) const;
+    int RotateModel(float, int, int) const;
+    int ScaleModel(float, int) const;
+    int DrawModel(const Settings&) const;
+    void MakeScreenShot(bool, bool) const;
 
-    void Run() /*const*/;
-    void SetingsWindow(Settings&);
+    void MakeGif(int) const;
 
-    std::size_t Size() const noexcept { return models.size(); }
+    void Run() const;
+    void SetingsWindow(Settings&) const;
+
+    std::size_t Size() const noexcept { return ctr_->HowMany(); }
 
   private:
     GLFWwindow* window;
-    std::vector<Model> models;
+    Controller* ctr_;
     ModelDrawer *drawer_;
 };
 
