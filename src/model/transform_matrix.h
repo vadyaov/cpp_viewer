@@ -1,7 +1,7 @@
 #ifndef TRANSFORM_MATRIX_H_
 #define TRANSFORM_MATRIX_H_
 
-#include "../matrix_lib/inc/s21_matrix_oop.h"
+#include "../s21_matrix_oop.h"
 
 namespace s21 {
   class TransformMatrix {
@@ -13,24 +13,30 @@ namespace s21 {
         matr_(3, 3) = 1;
       }
 
-      TransformMatrix(float x, float y, float z) : matr_{S21Matrix(4, 1)} {
-        matr_(0, 0) = x;
-        matr_(1, 0) = y;
-        matr_(2, 0) = z;
-        matr_(3, 0) = 1;
+      static TransformMatrix CreateVector(float x, float y, float z) {
+        TransformMatrix vector {S21Matrix(4, 1)};
+        
+        vector(0, 0) = x;
+        vector(1, 0) = y;
+        vector(2, 0) = z;
+        vector(3, 0) = 1;
+
+        return vector;
       }
+
+      explicit TransformMatrix(const S21Matrix& matrix) : matr_{matrix} {}
 
       ~TransformMatrix() = default;
 
-      explicit TransformMatrix(S21Matrix&& other) : matr_{std::move(other)} {
-      }
+      /* TransformMatrix(S21Matrix&& other) : matr_{std::move(other)} { */
+      /* } */
 
-      TransformMatrix(const TransformMatrix& other) : matr_{other.matr_} {}
+      /* TransformMatrix(const TransformMatrix& other) : matr_{other.matr_} {} */
 
-      TransformMatrix& operator=(const TransformMatrix& other) {
-        matr_ = other.matr_;
-        return *this;
-      }
+      /* TransformMatrix& operator=(const TransformMatrix& other) { */
+      /*   matr_ = other.matr_; */
+      /*   return *this; */
+      /* } */
       
       double& operator()(int i, int j) { return matr_(i, j); }
 
@@ -39,11 +45,6 @@ namespace s21 {
         return res;
       }
         
-      /* friend std::ostream& operator<<(std::ostream& os, const TransformMatrix& matrix) { */
-      /*   os << matrix.matr_; */
-      /*   return os; */
-      /* } */
-
     private:
       S21Matrix matr_;
   };

@@ -19,7 +19,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action,
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-ImguiWindow::ImguiWindow() : ctr_{new Controller()} {
+ImguiWindow::ImguiWindow() : ctr_{Controller::GetInstance()} {
 
   glfwSetErrorCallback(ErrorCallback);
   if (!glfwInit())
@@ -54,7 +54,7 @@ ImguiWindow::ImguiWindow() : ctr_{new Controller()} {
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // sync rendering loop to the refresh rate of the monitor
 
-  drawer_ = new ModelDrawer();
+  drawer_ = ModelDrawer::GetInstance();
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -310,8 +310,7 @@ int ImguiWindow::DrawModel(const Settings& s) const {
 int ImguiWindow::MoveModel(float ax, float ay, float az, int position) const {
   if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
-  s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateMoveMatrix(ax, ay, az);
-  ctr_->Transform(m, position);
+  ctr_->Transform(s21::TransformMatrixBuilder::CreateMoveMatrix(ax, ay, az), position);
   return 0;
 }
 
@@ -319,15 +318,13 @@ int ImguiWindow::MoveModel(float ax, float ay, float az, int position) const {
 int ImguiWindow::RotateModel(float angle, int axis, int position) const {
   if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
-  s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateRotationMatrix(angle, axis);
-  ctr_->Transform(m, position);
+  ctr_->Transform(s21::TransformMatrixBuilder::CreateRotationMatrix(angle, axis), position);
   return 0;
 }
 
 int ImguiWindow::ScaleModel(float coef, int position) const {
   if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
-  s21::TransformMatrix m = s21::TransformMatrixBuilder::CreateScaleMatrix(coef, coef, coef);
-  ctr_->Transform(m, position);
+  ctr_->Transform(s21::TransformMatrixBuilder::CreateScaleMatrix(coef, coef, coef), position);
   return 0;
 }

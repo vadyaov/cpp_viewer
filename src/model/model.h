@@ -109,11 +109,10 @@ class Model {
 
     void TransformModel(const s21::TransformMatrix& t) {
       for (_3DVertex& vertex : vertices_) {
-        s21::TransformMatrix vec(vertex.x_, vertex.y_, vertex.z_);
-        vec = t * vec;
-        vertex.x_ = vec(0, 0);
-        vertex.y_ = vec(1, 0);
-        vertex.z_ = vec(2, 0);
+        s21::TransformMatrix res = t * s21::TransformMatrix::CreateVector(vertex.x_, vertex.y_, vertex.z_);
+        vertex.x_ = res(0, 0);
+        vertex.y_ = res(1, 0);
+        vertex.z_ = res(2, 0);
       }
 
       MakeLines();

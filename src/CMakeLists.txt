@@ -26,6 +26,8 @@ FetchContent_MakeAvailable(json)
 add_subdirectory(imgui)
 include_directories(${PROJECT_SOURCE_DIR})
 add_executable(${APP_TARGET}
+  controller/ctr.cc
+  model/model_drawer.cc
   imgui_glfw_window.cc
   imgui/imgui-knobs.cpp
   main.cc)

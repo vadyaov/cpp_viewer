@@ -7,30 +7,33 @@
 
 class Controller {
   public:
-    Controller() = default;
     ~Controller()  = default;
 
-    void AddModel(const std::string& path) {
-      Model model;
-      model.LoadModel(path);
-      models.push_back(std::move(model));
+    void AddModel(const std::string& path);
+
+    void Transform(const s21::TransformMatrix& m, int counter);
+
+    std::size_t HowMany();
+    std::size_t VertexNum(int n);
+    std::size_t SurfaceNum(int n);
+
+    bool Empty();
+
+    std::vector<_3DVertex> GetVertices(int counter);
+
+    std::vector<_3DVertex> GetLines(int counter);
+
+    std::vector<_3DVertex> GetTriangles(int counter);
+
+    static Controller* GetInstance() {
+      if (!instance)
+        instance = new Controller();
+      return instance;
     }
-
-    void Transform(const s21::TransformMatrix& m, int counter) {
-      models[counter].TransformModel(m);
-    }
-
-    std::size_t HowMany() { return models.size(); }
-    std::size_t VertexNum(int n) { return models[n].VertexSize(); }
-    std::size_t SurfaceNum(int n) { return models[n].SurfaceSize(); }
-
-    bool Empty() { return models.empty(); }
-
-    std::vector<_3DVertex> GetVertices(int counter) { return models[counter].GetVertexArray(); }
-    std::vector<_3DVertex> GetLines(int counter) { return models[counter].GetLineArray(); }
-    std::vector<_3DVertex> GetTriangles(int counter) { return models[counter].GetTriangleArray(); }
     
   private:
+    static Controller* instance;
+    Controller() = default;
     std::vector<Model> models;
 };
 

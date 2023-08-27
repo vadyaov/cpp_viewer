@@ -22,18 +22,9 @@ class ImguiWindow {
   public:
     class Settings {
       public:
-        Settings() : counter{0},
-                     clear_color{0.1f, 0.1f, 0.25f, 1.0f},
-                     vertex_color{1.0f, 1.0f, 1.0f, 1.0f},
-                     lines_color{0.2f, 1.5f, 0.25f, 1.0f},
-                     triangles_color{0.215f, 0.5f, 0.11f, 1.0f},
-                     points {false}, lines{true}, triangles{true},
-                     move_speed{0.2f}, point_size{0.0}, line_width{1.0f},
-                     rounded{false}, ortho{false}, bmp{false}, jpg{false} {
-
+        Settings() : counter{0} {
           file_dialog.SetTitle("Browse");
           file_dialog.SetTypeFilters({".obj"});
-
           LoadSettings("savefile.json");
         }
                      
@@ -147,7 +138,6 @@ class ImguiWindow {
       bool bmp, jpg;
     };
 
-    ImguiWindow();
     ~ImguiWindow();
 
     int LoadModel(const std::string& path) const;
@@ -164,7 +154,13 @@ class ImguiWindow {
 
     std::size_t Size() const noexcept { return ctr_->HowMany(); }
 
+    static ImguiWindow& GetInstance() {
+      static ImguiWindow instance;
+      return instance;
+    }
+
   private:
+    ImguiWindow(); // Singleton class
     GLFWwindow* window;
     Controller* ctr_;
     ModelDrawer *drawer_;
