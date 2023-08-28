@@ -1,8 +1,7 @@
 #include "imgui_glwf_window.h"
-
 #include "imgui/imgui-knobs.h"
-
 #include "model/transform_matrix_builder.h"
+#include "settings.h"
 
 #include "gif.h"
 
@@ -26,7 +25,6 @@ ImguiWindow::ImguiWindow() : ctr_{Controller::GetInstance()} {
     throw std::runtime_error("Cannot initialize GLFW.");
 
 #if defined(__APPLE__)
-  // GL 3.2 + GLSL 150
   const char *glsl_version = "#version 150";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -43,7 +41,8 @@ ImguiWindow::ImguiWindow() : ctr_{Controller::GetInstance()} {
   /* glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); */
 #endif
 
-  window = glfwCreateWindow(1280, 720, "3DViewer_1.0", NULL, NULL);
+  const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+  window = glfwCreateWindow(mode->width, mode->height, "3DViewer_1.0", NULL, NULL);
   if (NULL == window) {
     glfwTerminate();
     throw std::runtime_error("Failed to create GLFW window");
@@ -64,10 +63,8 @@ ImguiWindow::ImguiWindow() : ctr_{Controller::GetInstance()} {
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
 
-  // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
-
 }
 
 void ImguiWindow::Run() const {
@@ -93,7 +90,6 @@ void ImguiWindow::Run() const {
     glViewport(0, 0, display_w, display_h);
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
@@ -113,31 +109,31 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
       ImGui::Text("%zu elements", ctr_->SurfaceNum(s.counter));
     }
 
-    ImGui::SliderInt("Models", &s.counter, 0, ctr_->Empty() ? 0 : ctr_->HowMany() - 1); // bag when 0 models loaded
+    ImGui::SliderInt("Models", &s.counter, 0, ctr_->Empty() ? 0 : ctr_->HowMany() - 1);
 
     static float value0 = 0, value1 = 0;
     if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
-      RotateModel((value1 - value0) * 0.0174533f, s21::RotationMatrixBuilder::Axis::X, s.counter);
+      ctr_->Rotate((value1 - value0) * 0.0174533f, s21::RotationMatrixBuilder::Axis::X, s.counter);
       value1 = value0;
     }
     ImGui::SameLine();
     static float value2 = 0, value3 = 0;
     if (ImGuiKnobs::Knob("Y Rot", &value2, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
-      RotateModel((value3 - value2) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Y, s.counter);
+      ctr_->Rotate((value3 - value2) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Y, s.counter);
       value3 = value2;
     }
     ImGui::SameLine();
     static float value4 = 0, value5 = 0;
     if (ImGuiKnobs::Knob("Z Rot", &value4, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
-      RotateModel((value5 - value4) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Z, s.counter);
+      ctr_->Rotate((value5 - value4) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Z, s.counter);
       value5 = value4;
     }
 
     ImGui::SameLine(0.0f, 40.0f);
     static float scale = 100.0f, scale0 = scale;
     if (ImGuiKnobs::Knob("Scale", &scale, 1.0f, 300.0f, 1.0f, "%1.0f %", ImGuiKnobVariant_WiperDot)) {
-      scale > scale0 ? ScaleModel(1.0f + (scale - scale0) / scale0, s.counter) :
-                       ScaleModel(1.0f - (scale0 - scale) / scale0, s.counter);
+      scale > scale0 ? ctr_->Scale(1.0f + (scale - scale0) / scale0, s.counter) :
+                       ctr_->Scale(1.0f - (scale0 - scale) / scale0, s.counter);
       scale0 = scale;
     }
 
@@ -148,7 +144,7 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
     if (ImGui::ArrowButton("##up", ImGuiDir_Up) ||
         ImGui::IsKeyPressed(ImGuiKey_UpArrow) || ImGui::IsKeyPressed(ImGuiKey_W))
-      MoveModel(0.0f, s.move_speed, 0.0f, s.counter);
+      ctr_->Move(0.0f, s.move_speed, 0.0f, s.counter);
     ImGui::SameLine(0.0f, 50.0f);
     ImGui::Checkbox("GL_POINTS", &s.points);
     ImGui::SameLine();
@@ -166,18 +162,18 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
 
     if (ImGui::ArrowButton("##left", ImGuiDir_Left) ||
         ImGui::IsKeyPressed(ImGuiKey_LeftArrow) || ImGui::IsKeyPressed(ImGuiKey_A))
-      MoveModel(-s.move_speed, 0.0f, 0.0f, s.counter);
+      ctr_->Move(-s.move_speed, 0.0f, 0.0f, s.counter);
     ImGui::SameLine(0.0f, 20.0f);
     if (ImGui::ArrowButton("##right", ImGuiDir_Right) ||
         ImGui::IsKeyPressed(ImGuiKey_RightArrow) || ImGui::IsKeyPressed(ImGuiKey_D))
-      MoveModel(s.move_speed, 0.0f, 0.0f, s.counter);
+      ctr_->Move(s.move_speed, 0.0f, 0.0f, s.counter);
 
     ImGui::SameLine(0.0f, 30.0f);
     ImGui::Checkbox("GL_LINES", &s.lines);
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
     if (ImGui::ArrowButton("##down", ImGuiDir_Down)
         || ImGui::IsKeyPressed(ImGuiKey_DownArrow) || ImGui::IsKeyPressed(ImGuiKey_S))
-      MoveModel(0.0f, -s.move_speed, 0.0f, s.counter);
+      ctr_->Move(0.0f, -s.move_speed, 0.0f, s.counter);
 
     ImGui::SameLine(0.0f, 50.0f);
     ImGui::Checkbox("GL_TRIANGLES", &s.triangles);
@@ -194,7 +190,6 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
     if (ImGui::SliderFloat("Line Width", &s.line_width, 0, 10.0f)) {
       glLineWidth(s.line_width);
     }
-
 
     ImGui::Checkbox("ORTHOGRAPHIC PROJECTION", &s.ortho);
 
@@ -304,27 +299,5 @@ int ImguiWindow::DrawModel(const Settings& s) const {
     drawer_->Draw(ctr_->GetTriangles(s.counter), GL_TRIANGLES);
   }
 
-  return 0;
-}
-
-int ImguiWindow::MoveModel(float ax, float ay, float az, int position) const {
-  if (ctr_->Empty()) return 0; // SOME BAD SITUATION
-
-  ctr_->Transform(s21::MoveMatrixBuilder(ax, ay, az).Build(), position);
-  return 0;
-}
-
-
-int ImguiWindow::RotateModel(float angle, int axis, int position) const {
-  if (ctr_->Empty()) return 0; // SOME BAD SITUATION
-
-  ctr_->Transform(s21::RotationMatrixBuilder(angle, axis).Build(), position);
-  return 0;
-}
-
-int ImguiWindow::ScaleModel(float coef, int position) const {
-  if (ctr_->Empty()) return 0; // SOME BAD SITUATION
-
-  ctr_->Transform(s21::ScaleMatrixBuilder(coef, coef, coef).Build(), position);
   return 0;
 }

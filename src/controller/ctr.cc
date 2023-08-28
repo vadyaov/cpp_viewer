@@ -9,25 +9,38 @@ void Controller::AddModel(const std::string& path) {
 }
 
 void Controller::Transform(const s21::TransformMatrix& m, int counter) {
+  if (models.empty()) return;
   models[counter].TransformModel(m);
 }
 
-std::size_t Controller::HowMany() { return models.size(); }
+void Controller::Move(float x, float y, float z, int counter) {
+  Transform(s21::MoveMatrixBuilder(x, y, z).Build(), counter);
+}
 
-std::size_t Controller::VertexNum(int n) { return models[n].VertexSize(); }
+void Controller::Rotate(float angle, int axis, int counter) {
+  Transform(s21::RotationMatrixBuilder(angle, axis).Build(), counter);
+}
 
-std::size_t Controller::SurfaceNum(int n) { return models[n].SurfaceSize(); }
+void Controller::Scale(float coef, int counter) {
+  Transform(s21::ScaleMatrixBuilder(coef, coef, coef).Build(), counter);
+}
 
-bool Controller::Empty() { return models.empty(); }
+std::size_t Controller::HowMany() const noexcept { return models.size(); }
 
-std::vector<_3DVertex> Controller::GetVertices(int counter) { 
+std::size_t Controller::VertexNum(int n) const noexcept { return models[n].VertexSize(); }
+
+std::size_t Controller::SurfaceNum(int n) const noexcept { return models[n].SurfaceSize(); }
+
+bool Controller::Empty() const noexcept { return models.empty(); }
+
+std::vector<_3DVertex> Controller::GetVertices(int counter) const { 
   return models[counter].GetVertexArray();
 }
 
-std::vector<_3DVertex> Controller::GetLines(int counter) {
+std::vector<_3DVertex> Controller::GetLines(int counter) const {
   return models[counter].GetLineArray();
 }
 
-std::vector<_3DVertex> Controller::GetTriangles(int counter) {
+std::vector<_3DVertex> Controller::GetTriangles(int counter) const {
   return models[counter].GetTriangleArray();
 }

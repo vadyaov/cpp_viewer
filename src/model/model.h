@@ -2,59 +2,37 @@
 #define MODEL_H_
 
 #include <vector>
-#include <string>
 
 #include "file_reader.h"
 #include "transform_matrix.h"
 
 class Model {
   public:
-    Model() : reader_{new FileReader()} {}
-    ~Model() { delete reader_; }
+    Model() = default;
+    ~Model() = default;
 
-    Model(Model&& other) noexcept {
-      surfaces_.swap(other.surfaces_);
-      vertices_.swap(other.vertices_);
-      lines_.swap(other.lines_);
-      triangles_.swap(other.triangles_);
+    Model(Model&& other) noexcept;
 
-      reader_ = other.reader_;
-      other.reader_ = nullptr;
-    }
+    std::vector<_3DVertex> GetVertexArray() const noexcept;
 
-    std::vector<_3DVertex> GetVertexArray() const { return vertices_; }
+    std::vector<_3DVertex> GetLineArray() const noexcept;
 
-    std::vector<_3DVertex> GetLineArray() const { return lines_; }
+    std::vector<_3DVertex> GetTriangleArray() const noexcept;
 
-    std::vector<_3DVertex> GetTriangleArray() const { return triangles_; }
-
-    std::size_t VertexSize() {return vertices_.size();}
-    std::size_t SurfaceSize() {return surfaces_.size();}
+    std::size_t VertexSize() const noexcept;
+    std::size_t SurfaceSize() const noexcept;
 
     void LoadModel(const std::string& path) {
+      FileReader reader(path);
 
-      try {
-        std::cout << "start loading model...\n";
-        reader_->LoadModel(path);
-        std::cout << "end loading model...\n";
-      } catch (const std::exception& e) {
-        std::cout << "Loading Model Error.\n"; // delete after
-        throw;
-      }
-
-      vertices_ = reader_->GetVertexBuffer();
-      surfaces_ = reader_->GetSurfaceBuffer();
+      vertices_ = reader.GetVertexBuffer();
+      surfaces_ = reader.GetSurfaceBuffer();
       
       lines_.reserve(CountLines(surfaces_));
       MakeLines();
 
       triangles_.reserve(CountTriangles(surfaces_));
       MakeTriangles();
-
-      std::cout << "vertex size = " << vertices_.size() << std::endl;
-      std::cout << "surface size = " << surfaces_.size() << std::endl;
-      std::cout << "lines size = " << lines_.size() << std::endl;
-      std::cout << "triangle size = " << triangles_.size() << std::endl;
 
     }
 
@@ -77,7 +55,6 @@ class Model {
       for (const auto& surface : surfaces_) {
         if (surface.size() < 3) continue;
 
-        // simple triangulation
         std::size_t j = 1;
         for (; j < surface.size() - 1; ++j) {
           triangles_.push_back(vertices_[surface[0] - 1]);
@@ -109,7 +86,8 @@ class Model {
 
     void TransformModel(const s21::TransformMatrix& t) {
       for (_3DVertex& vertex : vertices_) {
-        s21::TransformMatrix res = t * s21::TransformMatrix::CreateVector(vertex.x_, vertex.y_, vertex.z_);
+        s21::TransformMatrix res = t *
+          s21::TransformMatrix::CreateVector(vertex.x_, vertex.y_, vertex.z_);
         vertex.x_ = res(0, 0);
         vertex.y_ = res(1, 0);
         vertex.z_ = res(2, 0);
@@ -120,18 +98,16 @@ class Model {
 
     }
 
-    void print() {
-      std::cout << "Inside Model:\n\n";
-      std::cout << "Vertex Buffer:\n";
-      for (const auto& i : vertices_) {
-        std::cout << '(' << i.x_ << ", " << i.y_ << ", " << i.z_ << ")\n";
-      }
-      std::cout << std::endl;
-    }
+    /* void print() { */
+    /*   std::cout << "Inside Model:\n\n"; */
+    /*   std::cout << "Vertex Buffer:\n"; */
+    /*   for (const auto& i : vertices_) { */
+    /*     std::cout << '(' << i.x_ << ", " << i.y_ << ", " << i.z_ << ")\n"; */
+    /*   } */
+    /*   std::cout << std::endl; */
+    /* } */
 
   private:
-    FileReader* reader_;
-
     std::vector<_3DVertex> vertices_;
     std::vector<_3DVertex> lines_;
     std::vector<_3DVertex> triangles_;

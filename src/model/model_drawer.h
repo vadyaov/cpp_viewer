@@ -14,13 +14,13 @@ class ModelDrawer {
 
     ~ModelDrawer();
 
-    void SetColor(const std::string& name, const glm::vec4& color);
+    void SetColor(const std::string&, const glm::vec4&);
 
-    void SetSize(const std::string& name, float size);
+    void SetSize(const std::string&, float);
 
-    void Draw(const std::vector<_3DVertex>& vertices, GLuint type);
+    void Draw(const std::vector<_3DVertex>&, GLuint);
 
-    void MakeMVP(bool ortho);
+    void MakeMVP(bool);
 
     static ModelDrawer* GetInstance() {
       if (!instance)

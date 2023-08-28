@@ -27,7 +27,9 @@ add_subdirectory(imgui)
 include_directories(${PROJECT_SOURCE_DIR})
 add_executable(${APP_TARGET}
   controller/ctr.cc
+  model/model.cc
   model/model_drawer.cc
+  model/file_reader.cc
   imgui_glfw_window.cc
   imgui/imgui-knobs.cpp
   main.cc)
