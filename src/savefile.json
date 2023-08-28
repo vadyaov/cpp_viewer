@@ -6,7 +6,7 @@
         0.21078431606292725
     ],
     "jpg": true,
-    "last_filename": "Madara_Uchiha.obj",
+    "last_filename": "Alien Animal.obj",
     "line_width": 0.0,
     "lines": true,
     "lines_color": [
@@ -14,7 +14,7 @@
         0.716262936592102,
         0.9019607901573181
     ],
-    "move_speed": 0.10000000149011612,
+    "move_speed": 0.6759999990463257,
     "ortho": false,
     "point_size": 1.0290000438690186,
     "points": true,
@@ -24,7 +24,7 @@
         0.36274510622024536,
         0.05512303113937378
     ],
-    "tringles": true,
+    "tringles": false,
     "vertex_color": [
         0.5735294222831726,
         0.0,

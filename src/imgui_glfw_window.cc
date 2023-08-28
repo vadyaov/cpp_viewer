@@ -117,19 +117,19 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
 
     static float value0 = 0, value1 = 0;
     if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
-      RotateModel((value1 - value0) * 0.0174533f, s21::TransformMatrixBuilder::Axis::X, s.counter);
+      RotateModel((value1 - value0) * 0.0174533f, s21::RotationMatrixBuilder::Axis::X, s.counter);
       value1 = value0;
     }
     ImGui::SameLine();
     static float value2 = 0, value3 = 0;
     if (ImGuiKnobs::Knob("Y Rot", &value2, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
-      RotateModel((value3 - value2) * 0.0174533f, s21::TransformMatrixBuilder::Axis::Y, s.counter);
+      RotateModel((value3 - value2) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Y, s.counter);
       value3 = value2;
     }
     ImGui::SameLine();
     static float value4 = 0, value5 = 0;
     if (ImGuiKnobs::Knob("Z Rot", &value4, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
-      RotateModel((value5 - value4) * 0.0174533f, s21::TransformMatrixBuilder::Axis::Z, s.counter);
+      RotateModel((value5 - value4) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Z, s.counter);
       value5 = value4;
     }
 
@@ -310,7 +310,7 @@ int ImguiWindow::DrawModel(const Settings& s) const {
 int ImguiWindow::MoveModel(float ax, float ay, float az, int position) const {
   if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
-  ctr_->Transform(s21::TransformMatrixBuilder::CreateMoveMatrix(ax, ay, az), position);
+  ctr_->Transform(s21::MoveMatrixBuilder(ax, ay, az).Build(), position);
   return 0;
 }
 
@@ -318,13 +318,13 @@ int ImguiWindow::MoveModel(float ax, float ay, float az, int position) const {
 int ImguiWindow::RotateModel(float angle, int axis, int position) const {
   if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
-  ctr_->Transform(s21::TransformMatrixBuilder::CreateRotationMatrix(angle, axis), position);
+  ctr_->Transform(s21::RotationMatrixBuilder(angle, axis).Build(), position);
   return 0;
 }
 
 int ImguiWindow::ScaleModel(float coef, int position) const {
   if (ctr_->Empty()) return 0; // SOME BAD SITUATION
 
-  ctr_->Transform(s21::TransformMatrixBuilder::CreateScaleMatrix(coef, coef, coef), position);
+  ctr_->Transform(s21::ScaleMatrixBuilder(coef, coef, coef).Build(), position);
   return 0;
 }
