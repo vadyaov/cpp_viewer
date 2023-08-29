@@ -18,7 +18,7 @@ class ModelDrawer {
 
     void SetSize(const std::string&, float);
 
-    void Draw(const std::vector<_3DVertex>&, GLuint);
+    void Draw(std::size_t, const _3DVertex*, GLuint);
 
     void MakeMVP(bool);
 

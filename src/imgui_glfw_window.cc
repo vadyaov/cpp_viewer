@@ -286,17 +286,20 @@ int ImguiWindow::DrawModel(const Settings& s) const {
   if (s.points) {
     drawer_->SetSize("PointSize", s.point_size);
     drawer_->SetColor("MyColor", s.vertex_color);
-    drawer_->Draw(ctr_->GetVertices(s.counter), GL_POINTS);
+    drawer_->Draw(ctr_->GetVertexSize(s.counter),
+                  ctr_->GetVertices(s.counter), GL_POINTS);
   }
 
   if (s.lines) {
     drawer_->SetColor("MyColor", s.lines_color);
-    drawer_->Draw(ctr_->GetLines(s.counter), GL_LINES);
+    drawer_->Draw(ctr_->GetLinesSize(s.counter),
+                  ctr_->GetLines(s.counter), GL_LINES);
   }
 
   if (s.triangles) {
     drawer_->SetColor("MyColor", s.triangles_color);
-    drawer_->Draw(ctr_->GetTriangles(s.counter), GL_TRIANGLES);
+    drawer_->Draw(ctr_->GetTrianglesSize(s.counter),
+                  ctr_->GetTriangles(s.counter), GL_TRIANGLES);
   }
 
   return 0;

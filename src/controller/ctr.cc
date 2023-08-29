@@ -33,14 +33,26 @@ std::size_t Controller::SurfaceNum(int n) const noexcept { return models[n].Surf
 
 bool Controller::Empty() const noexcept { return models.empty(); }
 
-std::vector<_3DVertex> Controller::GetVertices(int counter) const { 
+const _3DVertex* Controller::GetVertices(int counter) const { 
   return models[counter].GetVertexArray();
 }
 
-std::vector<_3DVertex> Controller::GetLines(int counter) const {
+std::size_t Controller::GetVertexSize(int counter) const {
+  return models[counter].VertexSize();
+}
+
+const _3DVertex* Controller::GetLines(int counter) const {
   return models[counter].GetLineArray();
 }
 
-std::vector<_3DVertex> Controller::GetTriangles(int counter) const {
+std::size_t Controller::GetLinesSize(int counter) const {
+  return models[counter].LinesSize();
+}
+
+const _3DVertex* Controller::GetTriangles(int counter) const {
   return models[counter].GetTriangleArray();
+}
+
+std::size_t Controller::GetTrianglesSize(int counter) const {
+  return models[counter].TrianglesSize();
 }

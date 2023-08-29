@@ -29,17 +29,17 @@ void ModelDrawer::SetColor(const std::string& name, const glm::vec4& color) {
       shader_->setFloat(name, size);
     }
 
-    void ModelDrawer::Draw(const std::vector<_3DVertex>& vertices, GLuint type) {
+    void ModelDrawer::Draw(std::size_t size, const _3DVertex* start, GLuint type) {
 
       glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_); // lishnee na vsiakiy
 
-      glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(_3DVertex),
-                   &vertices.front(), GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, size * sizeof(_3DVertex),
+                   start, GL_STATIC_DRAW);
       glEnableVertexAttribArray(0);
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 0, nullptr);
       glBindVertexArray(vertex_array_);
 
-      glDrawArrays(type, 0, vertices.size());
+      glDrawArrays(type, 0, size);
     }
 
 

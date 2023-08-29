@@ -22,11 +22,14 @@ class Controller {
 
     bool Empty() const noexcept;
 
-    std::vector<_3DVertex> GetVertices(int) const;
+    const _3DVertex* GetVertices(int) const;
+    std::size_t GetVertexSize(int counter) const;
 
-    std::vector<_3DVertex> GetLines(int) const;
+    const _3DVertex* GetLines(int) const;
+    std::size_t GetLinesSize(int counter) const;
 
-    std::vector<_3DVertex> GetTriangles(int) const;
+    const _3DVertex* GetTriangles(int) const;
+    std::size_t GetTrianglesSize(int counter) const;
 
     static Controller* GetInstance() {
       if (!instance)
