@@ -93,104 +93,45 @@ void Model::MakeTriangles() {
 }
 
 void Model::MoveModelX(float range) {
-  for (_3DVertex& v : vertices_)
-    v.x_ += range;
-
-  for (_3DVertex& v : lines_)
-    v.x_ += range;
-
-  for (_3DVertex& v : triangles_)
-    v.x_ += range;
+  ApplyTransformation([range](auto& v) {
+      v.x_ += range;
+  });
 }
 
 void Model::MoveModelY(float range) {
-  for (_3DVertex& v : vertices_)
-    v.y_ += range;
-
-  for (_3DVertex& v : lines_)
-    v.y_ += range;
-
-  for (_3DVertex& v : triangles_)
-    v.y_ += range;
+  ApplyTransformation([range](auto& v) {
+      v.y_ += range;
+  });
 }
 
 void Model::RotateModelX(float angle) {
-  for (_3DVertex& v : vertices_) {
+  ApplyTransformation([angle](auto& v) {
     float y = v.y_, z = v.z_;
     v.y_ = y * std::cos(angle) - z * std::sin(angle);
     v.z_ = y * std::sin(angle) + z * std::cos(angle);
-  }
-
-  for (_3DVertex& v : lines_) {
-    float y = v.y_, z = v.z_;
-    v.y_ = y * std::cos(angle) - z * std::sin(angle);
-    v.z_ = y * std::sin(angle) + z * std::cos(angle);
-  }
-
-  for (_3DVertex& v : triangles_) {
-    float y = v.y_, z = v.z_;
-    v.y_ = y * std::cos(angle) - z * std::sin(angle);
-    v.z_ = y * std::sin(angle) + z * std::cos(angle);
-  }
+  });
 }
 
 void Model::RotateModelY(float angle) {
-  for (_3DVertex& v : vertices_) {
+  ApplyTransformation([angle](auto& v) {
     float x = v.x_, z = v.z_;
     v.x_ = x * std::cos(angle) + z * std::sin(angle);
     v.z_ = -x * std::sin(angle) + z * std::cos(angle);
-  }
-
-  for (_3DVertex& v : lines_) {
-    float x = v.x_, z = v.z_;
-    v.x_ = x * std::cos(angle) + z * std::sin(angle);
-    v.z_ = -x * std::sin(angle) + z * std::cos(angle);
-  }
-
-  for (_3DVertex& v : triangles_) {
-    float x = v.x_, z = v.z_;
-    v.x_ = x * std::cos(angle) + z * std::sin(angle);
-    v.z_ = -x * std::sin(angle) + z * std::cos(angle);
-  }
+  });
 }
 
 void Model::RotateModelZ(float angle) {
-  for (_3DVertex& v : vertices_) {
+  ApplyTransformation([angle](auto& v) {
     float x = v.x_, y = v.y_;
     v.x_ = x * std::cos(angle) - y * std::sin(angle);
     v.y_ = x * std::sin(angle) + y * std::cos(angle);
-  }
-
-  for (_3DVertex& v : lines_) {
-    float x = v.x_, y = v.y_;
-    v.x_ = x * std::cos(angle) - y * std::sin(angle);
-    v.y_ = x * std::sin(angle) + y * std::cos(angle);
-  }
-
-  for (_3DVertex& v : triangles_) {
-    float x = v.x_, y = v.y_;
-    v.x_ = x * std::cos(angle) - y * std::sin(angle);
-    v.y_ = x * std::sin(angle) + y * std::cos(angle);
-  }
+  });
 }
 
 void Model::Scale(float n) {
-  for (_3DVertex& v : vertices_) {
+  ApplyTransformation([n](auto& v) {
     v.x_ *= n;
     v.y_ *= n;
     v.z_ *= n;
-  }
-
-  for (_3DVertex& v : lines_) {
-    v.x_ *= n;
-    v.y_ *= n;
-    v.z_ *= n;
-  }
-
-  for (_3DVertex& v : triangles_) {
-    v.x_ *= n;
-    v.y_ *= n;
-    v.z_ *= n;
-  }
-
+  });
 }

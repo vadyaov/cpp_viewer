@@ -38,6 +38,20 @@ class Model {
 
     void Scale(float);
 
+    template <typename Function>
+      void ApplyTransformation(Function transform) {
+        ApplyTransformationToVector(vertices_, transform);
+        ApplyTransformationToVector(lines_, transform);
+        ApplyTransformationToVector(triangles_, transform);
+      }
+
+    template <typename VectorType, typename Function>
+      void ApplyTransformationToVector(VectorType& vector, Function transform) {
+        for (_3DVertex& v : vector) {
+            transform(v);
+        }
+      }
+
     /* void print() { */
     /*   std::cout << "Inside Model:\n\n"; */
     /*   std::cout << "Vertex Buffer:\n"; */
