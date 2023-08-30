@@ -8,21 +8,28 @@ void Controller::AddModel(const std::string& path) {
   models.push_back(std::move(model));
 }
 
-void Controller::Transform(const s21::TransformMatrix& m, int counter) {
-  if (models.empty()) return;
-  models[counter].TransformModel(m);
+void Controller::MoveX(float dx, int counter) {
+  models[counter].MoveModelX(dx);
 }
 
-void Controller::Move(float x, float y, float z, int counter) {
-  Transform(s21::MoveMatrixBuilder(x, y, z).Build(), counter);
+void Controller::MoveY(float dy, int counter) {
+  models[counter].MoveModelY(dy);
 }
 
-void Controller::Rotate(float angle, int axis, int counter) {
-  Transform(s21::RotationMatrixBuilder(angle, axis).Build(), counter);
+void Controller::RotateX(float angle, int counter) {
+  models[counter].RotateModelX(angle);
+}
+
+void Controller::RotateY(float angle, int counter) {
+  models[counter].RotateModelY(angle);
+}
+
+void Controller::RotateZ(float angle, int counter) {
+  models[counter].RotateModelZ(angle);
 }
 
 void Controller::Scale(float coef, int counter) {
-  Transform(s21::ScaleMatrixBuilder(coef, coef, coef).Build(), counter);
+  models[counter].Scale(coef);
 }
 
 std::size_t Controller::HowMany() const noexcept { return models.size(); }

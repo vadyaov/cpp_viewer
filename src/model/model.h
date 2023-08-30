@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "file_reader.h"
-#include "transform_matrix.h"
 
 class Model {
   public:
@@ -30,7 +29,14 @@ class Model {
 
     void MakeTriangles();
 
-    void TransformModel(const s21::TransformMatrix&);
+    void MoveModelX(float);
+    void MoveModelY(float);
+
+    void RotateModelX(float);
+    void RotateModelY(float);
+    void RotateModelZ(float);
+
+    void Scale(float);
 
     /* void print() { */
     /*   std::cout << "Inside Model:\n\n"; */

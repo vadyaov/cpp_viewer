@@ -1,16 +1,14 @@
 #include "model.h"
 
-#include <time.h>
-#include <iostream>
+#include <cmath>
 
 namespace {
  std::size_t CountLines(const std::vector<std::vector<int>>& surfaces) {
    std::size_t num = 0;
    for (const auto& surface : surfaces) {
-     /* if (surface.size() < 2) continue; // point */
+     if (surface.size() < 2) continue; // point
      num += surface.size() == 2 ? 1 : surface.size();
    }
-
    return num * 2;
   }
 
@@ -20,7 +18,6 @@ namespace {
        if (surface.size() < 3) continue;
        num += surface.size() == 3 ? 1 : surface.size() - 1;
      }
-
      return num * 3;
    }
 
@@ -95,22 +92,105 @@ void Model::MakeTriangles() {
   }
 }
 
-void Model::TransformModel(const s21::TransformMatrix& t) {
-  std::vector<_3DVertex> transformed_vertices(vertices_.size());
+void Model::MoveModelX(float range) {
+  for (_3DVertex& v : vertices_)
+    v.x_ += range;
 
-  for (std::size_t i = 0; i < vertices_.size(); ++i) {
-    _3DVertex& vertex = vertices_[i];
-    s21::TransformMatrix res = t *
-      s21::TransformMatrix::CreateVector(vertex.x_, vertex.y_, vertex.z_);
+  for (_3DVertex& v : lines_)
+    v.x_ += range;
 
-    _3DVertex& transformed_vertex = transformed_vertices[i];
-    transformed_vertex.x_ = res(0, 0);
-    transformed_vertex.y_ = res(1, 0);
-    transformed_vertex.z_ = res(2, 0);
+  for (_3DVertex& v : triangles_)
+    v.x_ += range;
+}
+
+void Model::MoveModelY(float range) {
+  for (_3DVertex& v : vertices_)
+    v.y_ += range;
+
+  for (_3DVertex& v : lines_)
+    v.y_ += range;
+
+  for (_3DVertex& v : triangles_)
+    v.y_ += range;
+}
+
+void Model::RotateModelX(float angle) {
+  for (_3DVertex& v : vertices_) {
+    float y = v.y_, z = v.z_;
+    v.y_ = y * std::cos(angle) - z * std::sin(angle);
+    v.z_ = y * std::sin(angle) + z * std::cos(angle);
   }
 
-  vertices_ = std::move(transformed_vertices);
+  for (_3DVertex& v : lines_) {
+    float y = v.y_, z = v.z_;
+    v.y_ = y * std::cos(angle) - z * std::sin(angle);
+    v.z_ = y * std::sin(angle) + z * std::cos(angle);
+  }
 
-  MakeLines();
-  MakeTriangles();
+  for (_3DVertex& v : triangles_) {
+    float y = v.y_, z = v.z_;
+    v.y_ = y * std::cos(angle) - z * std::sin(angle);
+    v.z_ = y * std::sin(angle) + z * std::cos(angle);
+  }
+}
+
+void Model::RotateModelY(float angle) {
+  for (_3DVertex& v : vertices_) {
+    float x = v.x_, z = v.z_;
+    v.x_ = x * std::cos(angle) + z * std::sin(angle);
+    v.z_ = -x * std::sin(angle) + z * std::cos(angle);
+  }
+
+  for (_3DVertex& v : lines_) {
+    float x = v.x_, z = v.z_;
+    v.x_ = x * std::cos(angle) + z * std::sin(angle);
+    v.z_ = -x * std::sin(angle) + z * std::cos(angle);
+  }
+
+  for (_3DVertex& v : triangles_) {
+    float x = v.x_, z = v.z_;
+    v.x_ = x * std::cos(angle) + z * std::sin(angle);
+    v.z_ = -x * std::sin(angle) + z * std::cos(angle);
+  }
+}
+
+void Model::RotateModelZ(float angle) {
+  for (_3DVertex& v : vertices_) {
+    float x = v.x_, y = v.y_;
+    v.x_ = x * std::cos(angle) - y * std::sin(angle);
+    v.y_ = x * std::sin(angle) + y * std::cos(angle);
+  }
+
+  for (_3DVertex& v : lines_) {
+    float x = v.x_, y = v.y_;
+    v.x_ = x * std::cos(angle) - y * std::sin(angle);
+    v.y_ = x * std::sin(angle) + y * std::cos(angle);
+  }
+
+  for (_3DVertex& v : triangles_) {
+    float x = v.x_, y = v.y_;
+    v.x_ = x * std::cos(angle) - y * std::sin(angle);
+    v.y_ = x * std::sin(angle) + y * std::cos(angle);
+  }
+}
+
+void Model::Scale(float n) {
+  for (_3DVertex& v : vertices_) {
+    v.x_ *= n;
+    v.y_ *= n;
+    v.z_ *= n;
+  }
+
+  for (_3DVertex& v : lines_) {
+    v.x_ *= n;
+    v.y_ *= n;
+    v.z_ *= n;
+  }
+
+  for (_3DVertex& v : triangles_) {
+    v.x_ *= n;
+    v.y_ *= n;
+    v.z_ *= n;
+  }
+
 }

@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "../model/model.h"
-#include "../model/transform_matrix_builder.h"
 
 class Controller {
   public:
@@ -12,8 +11,16 @@ class Controller {
 
     void AddModel(const std::string& path);
 
-    void Move(float, float, float, int);
-    void Rotate(float, int, int);
+    void MoveX(float, int);
+    void MoveY(float, int);
+
+    // mb add this idk
+    /* void MoveZ(float, int); */
+
+    void RotateX(float, int);
+    void RotateY(float, int);
+    void RotateZ(float, int);
+
     void Scale(float, int);
 
     std::size_t HowMany() const noexcept;
@@ -41,7 +48,6 @@ class Controller {
     static Controller* instance;
     Controller() = default;
     std::vector<Model> models;
-    void Transform(const s21::TransformMatrix& m, int counter);
 };
 
 #endif // CTR_H_

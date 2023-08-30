@@ -1,6 +1,5 @@
 #include "imgui_glwf_window.h"
 #include "imgui/imgui-knobs.h"
-#include "model/transform_matrix_builder.h"
 #include "settings.h"
 
 #include "gif.h"
@@ -113,19 +112,19 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
 
     static float value0 = 0, value1 = 0;
     if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
-      ctr_->Rotate((value1 - value0) * 0.0174533f, s21::RotationMatrixBuilder::Axis::X, s.counter);
+      ctr_->RotateX((value1 - value0) * 0.0174533f, s.counter);
       value1 = value0;
     }
     ImGui::SameLine();
     static float value2 = 0, value3 = 0;
     if (ImGuiKnobs::Knob("Y Rot", &value2, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
-      ctr_->Rotate((value3 - value2) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Y, s.counter);
+      ctr_->RotateY((value3 - value2) * 0.0174533f, s.counter);
       value3 = value2;
     }
     ImGui::SameLine();
     static float value4 = 0, value5 = 0;
     if (ImGuiKnobs::Knob("Z Rot", &value4, 0.0f, 360.0f, 1.0f, "Y %1.0f", ImGuiKnobVariant_Wiper)) {
-      ctr_->Rotate((value5 - value4) * 0.0174533f, s21::RotationMatrixBuilder::Axis::Z, s.counter);
+      ctr_->RotateZ((value5 - value4) * 0.0174533f, s.counter);
       value5 = value4;
     }
 
@@ -144,7 +143,7 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
     if (ImGui::ArrowButton("##up", ImGuiDir_Up) ||
         ImGui::IsKeyPressed(ImGuiKey_UpArrow) || ImGui::IsKeyPressed(ImGuiKey_W))
-      ctr_->Move(0.0f, s.move_speed, 0.0f, s.counter);
+      ctr_->MoveY(s.move_speed, s.counter);
     ImGui::SameLine(0.0f, 50.0f);
     ImGui::Checkbox("GL_POINTS", &s.points);
     ImGui::SameLine();
@@ -162,18 +161,18 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
 
     if (ImGui::ArrowButton("##left", ImGuiDir_Left) ||
         ImGui::IsKeyPressed(ImGuiKey_LeftArrow) || ImGui::IsKeyPressed(ImGuiKey_A))
-      ctr_->Move(-s.move_speed, 0.0f, 0.0f, s.counter);
+      ctr_->MoveX(-s.move_speed, s.counter);
     ImGui::SameLine(0.0f, 20.0f);
     if (ImGui::ArrowButton("##right", ImGuiDir_Right) ||
         ImGui::IsKeyPressed(ImGuiKey_RightArrow) || ImGui::IsKeyPressed(ImGuiKey_D))
-      ctr_->Move(s.move_speed, 0.0f, 0.0f, s.counter);
+      ctr_->MoveX(s.move_speed, s.counter);
 
     ImGui::SameLine(0.0f, 30.0f);
     ImGui::Checkbox("GL_LINES", &s.lines);
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 19.0f);
     if (ImGui::ArrowButton("##down", ImGuiDir_Down)
         || ImGui::IsKeyPressed(ImGuiKey_DownArrow) || ImGui::IsKeyPressed(ImGuiKey_S))
-      ctr_->Move(0.0f, -s.move_speed, 0.0f, s.counter);
+      ctr_->MoveY(-s.move_speed, s.counter);
 
     ImGui::SameLine(0.0f, 50.0f);
     ImGui::Checkbox("GL_TRIANGLES", &s.triangles);
