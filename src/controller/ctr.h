@@ -13,9 +13,7 @@ class Controller {
 
     void MoveX(float, int);
     void MoveY(float, int);
-
-    // mb add this idk
-    /* void MoveZ(float, int); */
+    void MoveZ(float, int);
 
     void RotateX(float, int);
     void RotateY(float, int);

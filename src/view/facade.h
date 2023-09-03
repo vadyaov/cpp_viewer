@@ -28,7 +28,6 @@ class Facade {
     void SetingsWindow(Settings&) const;
 
     void MakeScreenShot(bool, bool) const;
-    void MakeGif(int) const;
 
     static Facade& GetInstance() {
       static Facade instance;

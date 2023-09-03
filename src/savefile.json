@@ -7,16 +7,16 @@
     ],
     "jpg": true,
     "last_filename": "lamp.obj",
-    "line_width": 3.627000093460083,
+    "line_width": 0.0,
     "lines": true,
     "lines_color": [
         0.0,
         0.0,
         0.0
     ],
-    "move_speed": 0.2199999988079071,
-    "ortho": true,
-    "point_size": 0.7360000014305115,
+    "move_speed": 0.703000009059906,
+    "ortho": false,
+    "point_size": 1.4129999876022339,
     "points": true,
     "rounded": false,
     "triangles_color": [

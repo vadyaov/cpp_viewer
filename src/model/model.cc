@@ -104,6 +104,12 @@ void Model::MoveModelY(float range) {
   });
 }
 
+void Model::MoveModelZ(float range) {
+  ApplyTransformation([range](auto& v) {
+      v.z_ += range;
+  });
+}
+
 void Model::RotateModelX(float angle) {
   ApplyTransformation([angle](auto& v) {
     float y = v.y_, z = v.z_;

@@ -31,6 +31,7 @@ class Model {
 
     void MoveModelX(float);
     void MoveModelY(float);
+    void MoveModelZ(float);
 
     void RotateModelX(float);
     void RotateModelY(float);
@@ -51,15 +52,6 @@ class Model {
             transform(v);
         }
       }
-
-    /* void print() { */
-    /*   std::cout << "Inside Model:\n\n"; */
-    /*   std::cout << "Vertex Buffer:\n"; */
-    /*   for (const auto& i : vertices_) { */
-    /*     std::cout << '(' << i.x_ << ", " << i.y_ << ", " << i.z_ << ")\n"; */
-    /*   } */
-    /*   std::cout << std::endl; */
-    /* } */
 
   private:
     std::vector<_3DVertex> vertices_;

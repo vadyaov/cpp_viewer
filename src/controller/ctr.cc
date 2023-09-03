@@ -17,6 +17,10 @@ void Controller::MoveY(float dy, int counter) {
   models[counter].MoveModelY(dy);
 }
 
+void Controller::MoveZ(float dz, int counter) {
+  models[counter].MoveModelZ(dz);
+}
+
 void Controller::RotateX(float angle, int counter) {
   models[counter].RotateModelX(angle);
 }

@@ -2,8 +2,6 @@
 #include "../imgui/imgui-knobs.h"
 #include "settings.h"
 
-#include "gif.h"
-
 #include <iostream>
 #include <SDL2/SDL_surface.h>
 
@@ -173,6 +171,12 @@ void Facade::SetingsWindow(Settings& s) const {
     ImGui::SameLine(0.0f, 50.0f);
     ImGui::Checkbox("GL_TRIANGLES", &s.triangles);
 
+    if (ImGui::Button("MoveBack") || ImGui::IsKeyPressed(ImGuiKey_Q))
+      ctr_->MoveZ(-s.move_speed, s.counter);
+    ImGui::SameLine();
+    if (ImGui::Button("MoveForward") || ImGui::IsKeyPressed(ImGuiKey_E))
+      ctr_->MoveZ(s.move_speed, s.counter);
+
     ImGui::PopButtonRepeat();
     }
 
@@ -196,8 +200,6 @@ void Facade::SetingsWindow(Settings& s) const {
     ImGui::Checkbox("BMP", &s.bmp);
     ImGui::SameLine();
     ImGui::Checkbox("JPG", &s.jpg);
-
-    if (ImGui::Button("GIF")) MakeGif(100);
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
               1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -237,22 +239,6 @@ void Facade::MakeScreenShot(bool bmp, bool jpg) const {
     SDL_FreeSurface(temp);
     free(pixels);
   }
-}
-
-void Facade::MakeGif(int frames) const {
-  int height = 0;
-  int width = 0;
-  glfwGetFramebufferSize(window, &width, &height);
-
-  GifWriter gif_writer;
-  GifBegin(&gif_writer, "Animation.gif", width, height, 100);
-
-  for (int frame = 0; frame < frames; ++frame) {
-    std::vector<std::uint8_t> pixels(width * height * 3);
-    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
-    GifWriteFrame(&gif_writer, pixels.data(), width, height, 100);
-  }
-  GifEnd(&gif_writer);
 }
 
 Facade::~Facade() {
