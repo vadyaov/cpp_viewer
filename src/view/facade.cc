@@ -1,5 +1,5 @@
-#include "imgui_glwf_window.h"
-#include "imgui/imgui-knobs.h"
+#include "facade.h"
+#include "../imgui/imgui-knobs.h"
 #include "settings.h"
 
 #include "gif.h"
@@ -11,13 +11,7 @@ static void ErrorCallback(const int error, const char *description) {
   std::cerr << "Glfw Error " << error << ": " << description;
 }
 
-static void KeyCallback(GLFWwindow* window, int key, int scancode, int action,
-    int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
-ImguiWindow::ImguiWindow() : ctr_{Controller::GetInstance()} {
+Facade::Facade() : ctr_{Controller::GetInstance()} {
 
   glfwSetErrorCallback(ErrorCallback);
   if (!glfwInit())
@@ -47,8 +41,6 @@ ImguiWindow::ImguiWindow() : ctr_{Controller::GetInstance()} {
     throw std::runtime_error("Failed to create GLFW window");
   }
 
-  glfwSetKeyCallback(window, KeyCallback);
-
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // sync rendering loop to the refresh rate of the monitor
 
@@ -66,7 +58,7 @@ ImguiWindow::ImguiWindow() : ctr_{Controller::GetInstance()} {
   ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
-void ImguiWindow::Run() const {
+void Facade::Run() const {
 
   Settings s;
   LoadModel(std::string("models/") + std::string(s.filenames.at(0)));
@@ -95,7 +87,7 @@ void ImguiWindow::Run() const {
 
 }
 
-void ImguiWindow::SetingsWindow(Settings& s) const {
+void Facade::SetingsWindow(Settings& s) const {
     ImGui::Begin("Settings");
 
     if (ImGui::Button("Browse")) s.file_dialog.Open();
@@ -108,8 +100,9 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
       ImGui::Text("%zu elements", ctr_->SurfaceNum(s.counter));
     }
 
-    ImGui::SliderInt("Models", &s.counter, 0, ctr_->Empty() ? 0 : ctr_->HowMany() - 1);
+    ImGui::SliderInt("Models", &s.counter, 0, ctr_->HowMany() - 1);
 
+    if (ImGui::CollapsingHeader("Rotation & Scale")) {
     static float value0 = 0, value1 = 0;
     if (ImGuiKnobs::Knob("X Rot", &value0, 0.0f, 360.0f, 1.0f, "X %1.0f", ImGuiKnobVariant_Wiper)) {
       ctr_->RotateX((value1 - value0) * 0.0174533f, s.counter);
@@ -135,6 +128,9 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
                        ctr_->Scale(1.0f - (scale0 - scale) / scale0, s.counter);
       scale0 = scale;
     }
+    }
+
+    if (ImGui::CollapsingHeader("Movement & Primitives")) {
 
     ImGui::SliderFloat("Move Speed", &s.move_speed, 0.1f, 5.0f);
 
@@ -178,11 +174,14 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
     ImGui::Checkbox("GL_TRIANGLES", &s.triangles);
 
     ImGui::PopButtonRepeat();
+    }
 
-    ImGui::ColorEdit3("Back Color", (float *)&s.clear_color);
-    ImGui::ColorEdit3("Vertex Color", (float *)&s.vertex_color);
-    ImGui::ColorEdit3("Lines Color", (float *)&s.lines_color);
-    ImGui::ColorEdit3("Triangles Color", (float *)&s.triangles_color);
+    if (ImGui::CollapsingHeader("Colors")) {
+      ImGui::ColorEdit3("Back Color", (float *)&s.clear_color);
+      ImGui::ColorEdit3("Vertex Color", (float *)&s.vertex_color);
+      ImGui::ColorEdit3("Lines Color", (float *)&s.lines_color);
+      ImGui::ColorEdit3("Triangles Color", (float *)&s.triangles_color);
+    }
 
     ImGui::SliderFloat("Point Size", &s.point_size, 0, 15.0f);
 
@@ -218,14 +217,14 @@ void ImguiWindow::SetingsWindow(Settings& s) const {
     }
 }
 
-void ImguiWindow::MakeScreenShot(bool bmp, bool jpg) const {
+void Facade::MakeScreenShot(bool bmp, bool jpg) const {
   int height = 0;
   int width = 0;
   glfwGetFramebufferSize(window, &width, &height);
 
   SDL_Surface *temp = SDL_CreateRGBSurface(
       SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
-  if (temp == NULL) ErrorCallback(1, "CreateRGBSurface failed");
+  if (temp == NULL) ErrorCallback(1, "SDL_Surface creation failed.");
 
   char *pixels = static_cast<char *>(calloc(width * height * 3, 1));
   if (pixels) {
@@ -240,7 +239,7 @@ void ImguiWindow::MakeScreenShot(bool bmp, bool jpg) const {
   }
 }
 
-void ImguiWindow::MakeGif(int frames) const {
+void Facade::MakeGif(int frames) const {
   int height = 0;
   int width = 0;
   glfwGetFramebufferSize(window, &width, &height);
@@ -256,7 +255,7 @@ void ImguiWindow::MakeGif(int frames) const {
   GifEnd(&gif_writer);
 }
 
-ImguiWindow::~ImguiWindow() {
+Facade::~Facade() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
@@ -267,18 +266,17 @@ ImguiWindow::~ImguiWindow() {
   delete ctr_;
 }
 
-int ImguiWindow::LoadModel(const std::string& path) const {
+void Facade::LoadModel(const std::string& path) const {
   try {
     ctr_->AddModel(path);
   } catch (const std::exception& e) {
-    ErrorCallback(-1, e.what());
-    return -1;
+    throw;
+    ErrorCallback(2, e.what());
   }
-  return 0; // Dont forget to return some pretty error class
 }
 
-int ImguiWindow::DrawModel(const Settings& s) const {
-  if (ctr_->Empty()) return 0;
+void Facade::DrawModel(const Settings& s) const {
+  if (ctr_->Empty()) return;
 
   drawer_->MakeMVP(s.ortho);
 
@@ -300,6 +298,4 @@ int ImguiWindow::DrawModel(const Settings& s) const {
     drawer_->Draw(ctr_->GetTrianglesSize(s.counter),
                   ctr_->GetTriangles(s.counter), GL_TRIANGLES);
   }
-
-  return 0;
 }

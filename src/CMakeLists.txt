@@ -9,7 +9,7 @@ set(APP_VERSION_MINOR 0)
 
 set(APP_TARGET vimer.app)
 
-# add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-unused-variable)
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 add_compile_options(-fsanitize=address)
 add_link_options(-fsanitize=address)
 
@@ -30,10 +30,10 @@ add_executable(${APP_TARGET}
   model/model.cc
   model/model_drawer.cc
   model/file_reader.cc
-  imgui_glfw_window.cc
+  view/facade.cc
   imgui/imgui-knobs.cpp
   main.cc)
-target_link_libraries(${APP_TARGET} imgui ${CMAKE_SOURCE_DIR}/s21_matrix_oop.a)
+target_link_libraries(${APP_TARGET} imgui)
 
 # glfw
 find_package(glfw3 REQUIRED)

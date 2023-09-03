@@ -57,7 +57,7 @@ std::vector<_3DVertex> FileReader::GetVertexBuffer() {
     } else if (IsSurfaceLine(line)) {
       break;
     }
-    pos_ = file_.tellg(); // i don't like this action every iteration
+    pos_ = file_.tellg();
   }
   return vertex_buf;
 }

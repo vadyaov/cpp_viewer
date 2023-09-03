@@ -3,6 +3,7 @@
 Controller* Controller::instance = 0;
 
 void Controller::AddModel(const std::string& path) {
+  models.reserve(models.size() + 1);
   Model model;
   model.LoadModel(path);
   models.push_back(std::move(model));

@@ -7,22 +7,22 @@
     ],
     "jpg": true,
     "last_filename": "lamp.obj",
-    "line_width": 0.04899999871850014,
+    "line_width": 3.627000093460083,
     "lines": true,
     "lines_color": [
-        0.01739715412259102,
-        0.8872548937797546,
-        0.8360867500305176
+        0.0,
+        0.0,
+        0.0
     ],
-    "move_speed": 0.3400000035762787,
-    "ortho": false,
-    "point_size": 1.3240000009536743,
-    "points": false,
+    "move_speed": 0.2199999988079071,
+    "ortho": true,
+    "point_size": 0.7360000014305115,
+    "points": true,
     "rounded": false,
     "triangles_color": [
-        0.20877715945243835,
-        0.36274510622024536,
-        0.19915416836738586
+        0.36917924880981445,
+        0.5490195751190186,
+        0.3579392433166504
     ],
     "tringles": true,
     "vertex_color": [

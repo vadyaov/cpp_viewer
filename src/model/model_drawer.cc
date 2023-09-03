@@ -60,5 +60,4 @@ void ModelDrawer::SetColor(const std::string& name, const glm::vec4& color) {
       glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
       glUniformMatrix4fv(view_loc, 1, GL_FALSE, &view[0][0]);
       shader_->setMat4("projection", projection);
-
     }

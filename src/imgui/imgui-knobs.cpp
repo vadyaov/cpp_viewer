@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 #include "imgui-knobs.h"
 
 #include <cmath>
@@ -301,3 +304,5 @@ namespace ImGuiKnobs {
     }
 
 }// namespace ImGuiKnobs
+
+#pragma GCC diagnostic pop

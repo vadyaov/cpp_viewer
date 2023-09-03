@@ -2,12 +2,12 @@
 #define SETTINGS_H_
 
 #include <fstream>
-#include "build/_deps/json-src/single_include/nlohmann/json.hpp"
+#include "../build/_deps/json-src/single_include/nlohmann/json.hpp"
 using json = nlohmann::json;
 
 #include <glm/glm.hpp>
 
-#include "imgui/imfilebrowser.h"
+#include "../imgui/imfilebrowser.h"
 
 class Settings {
 public:

@@ -8,7 +8,7 @@ MK := mkdir -p
 EXEC := vimer.app
 ARCHIVE := $(CURR_DIR)/vimer
 
-all: tests install run
+all: install run
 
 install:
 	@$(MK) $(BUILD_DIR)
@@ -55,14 +55,7 @@ cpy_files:
 	cp $(CURR_DIR)/models/* $(ARCHIVE)/src/models
 	cp $(CURR_DIR)/shaders/* $(ARCHIVE)/src/shaders
 
-tests:
-	@cd $(LOGIC_DIR) ; make test ; cd ./..
-
-gcov_report:
-	@cd $(LOGIC_DIR) ; make gcov_report ; cd ./..
-
 clean: uninstall
-	@cd $(LOGIC_DIR) ; make clean ; cd ./..
 	@$(RM) -r doc/
 	@$(RM) imgui.ini
 	@$(RM) ScreenShot.jpeg

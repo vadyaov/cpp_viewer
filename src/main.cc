@@ -1,7 +1,7 @@
-#include "imgui_glwf_window.h"
+#include "view/facade.h"
 
 int main() {
-  ImguiWindow& glfw_window = ImguiWindow::GetInstance();
-  glfw_window.Run();
+  const Facade& window = Facade::GetInstance();
+  window.Run();
   return 0;
 }
