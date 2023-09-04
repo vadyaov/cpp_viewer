@@ -5,10 +5,6 @@
 #include <GLFW/glfw3.h>
 #include <fstream>
 
-#include "../imgui/imgui.h"
-#include "../imgui/imgui_impl_glfw.h"
-#include "../imgui/imgui_impl_opengl3.h"
-
 #include "../model/model.h"
 #include "../model/model_drawer.h"
 

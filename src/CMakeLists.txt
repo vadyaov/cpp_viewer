@@ -31,6 +31,7 @@ add_executable(${APP_TARGET}
   model/model_drawer.cc
   model/file_reader.cc
   view/facade.cc
+  view/settings.cc
   imgui/imgui-knobs.cpp
   main.cc)
 target_link_libraries(${APP_TARGET} imgui)

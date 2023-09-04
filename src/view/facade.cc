@@ -1,6 +1,12 @@
 #include "facade.h"
-#include "../imgui/imgui-knobs.h"
+
 #include "settings.h"
+
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_glfw.h"
+#include "../imgui/imgui_impl_opengl3.h"
+#include "../imgui/imgui-knobs.h"
+
 
 #include <iostream>
 #include <SDL2/SDL_surface.h>
@@ -58,7 +64,7 @@ Facade::Facade() : ctr_{Controller::GetInstance()} {
 
 void Facade::Run() const {
 
-  Settings s;
+  Settings s = Settings::Builder().Build();
   LoadModel(std::string("models/") + std::string(s.filenames.at(0)));
 
   while (!glfwWindowShouldClose(window)) {
@@ -82,6 +88,8 @@ void Facade::Run() const {
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+
+  s.Save();
 
 }
 

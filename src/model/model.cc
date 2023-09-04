@@ -21,7 +21,7 @@ namespace {
      return num * 3;
    }
 
-};
+} // namespace
 
 Model::Model(Model&& other) noexcept {
   surfaces_.swap(other.surfaces_);
