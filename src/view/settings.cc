@@ -7,14 +7,14 @@ using json = nlohmann::json;
 #include "../imgui/imgui.h"
 #include "../imgui/imfilebrowser.h"
 
-std::string Settings::GetFilename() {
+std::string s21::Settings::GetFilename() {
     std::string name = "";
     if (!filenames.empty())
       name = filenames[counter];
     return name;
   }
 
-void Settings::Builder::LoadSettings() {
+void s21::Settings::Builder::LoadSettings() {
     std::ifstream file("savefile.json");
     if (file.is_open()) {
       json json;
@@ -58,7 +58,7 @@ void Settings::Builder::LoadSettings() {
     }
   }
 
-void Settings::Save() {
+void s21::Settings::Save() {
     json json;
     json["clear_color"].push_back(clear_color.x);
     json["clear_color"].push_back(clear_color.y);
@@ -97,7 +97,7 @@ void Settings::Save() {
     }
   }
 
-Settings::Builder::Builder() {
+s21::Settings::Builder::Builder() {
   settings.counter = 0;
   settings.file_dialog.SetTitle("Browse");
   settings.file_dialog.SetTypeFilters({".obj"});

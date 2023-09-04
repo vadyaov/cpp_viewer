@@ -10,6 +10,9 @@
 
 #include "../controller/ctr.h"
 
+
+namespace s21 {
+
 class Settings;
 
 class Facade {
@@ -36,5 +39,7 @@ class Facade {
     Controller* ctr_;
     ModelDrawer *drawer_;
 };
+
+} // namespace s21
 
 #endif // FACADE_H_

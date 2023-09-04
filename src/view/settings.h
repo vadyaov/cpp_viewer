@@ -6,6 +6,8 @@
 #include "../imgui/imgui.h"
 #include "../imgui/imfilebrowser.h"
 
+namespace s21 {
+
 class Settings {
 public:
   int counter;
@@ -45,5 +47,6 @@ class Settings::Builder {
     Settings Build() {return settings;}
 };
 
+} // namespace s21
 
 #endif // SETTINGS_H_ 

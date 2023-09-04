@@ -5,6 +5,8 @@
 
 #include "file_reader.h"
 
+namespace s21 {
+
 class Model {
   public:
     Model() = default;
@@ -60,5 +62,7 @@ class Model {
 
     std::vector<std::vector<int>> surfaces_;
 };
+
+} // namespace s21
 
 #endif // MODEL_H_

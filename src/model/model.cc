@@ -23,34 +23,34 @@ namespace {
 
 } // namespace
 
-Model::Model(Model&& other) noexcept {
+s21::Model::Model(Model&& other) noexcept {
   surfaces_.swap(other.surfaces_);
   vertices_.swap(other.vertices_);
   lines_.swap(other.lines_);
   triangles_.swap(other.triangles_);
 }
 
-const _3DVertex* Model::GetVertexArray() const noexcept {
+const _3DVertex* s21::Model::GetVertexArray() const noexcept {
   return &vertices_.front();
 }
 
-const _3DVertex* Model::GetLineArray() const noexcept {
+const _3DVertex* s21::Model::GetLineArray() const noexcept {
   return &lines_.front();
 }
 
-const _3DVertex* Model::GetTriangleArray() const noexcept {
+const _3DVertex* s21::Model::GetTriangleArray() const noexcept {
   return &triangles_.front();
 }
 
-std::size_t Model::VertexSize() const noexcept {return vertices_.size();}
+std::size_t s21::Model::VertexSize() const noexcept {return vertices_.size();}
 
-std::size_t Model::LinesSize() const noexcept {return lines_.size();}
+std::size_t s21::Model::LinesSize() const noexcept {return lines_.size();}
 
-std::size_t Model::TrianglesSize() const noexcept {return triangles_.size();}
+std::size_t s21::Model::TrianglesSize() const noexcept {return triangles_.size();}
 
-std::size_t Model::SurfaceSize() const noexcept {return surfaces_.size();}
+std::size_t s21::Model::SurfaceSize() const noexcept {return surfaces_.size();}
 
-void Model::LoadModel(const std::string& path) {
+void s21::Model::LoadModel(const std::string& path) {
   FileReader reader(path);
 
   vertices_ = reader.GetVertexBuffer();
@@ -64,7 +64,7 @@ void Model::LoadModel(const std::string& path) {
 
 }
 
-void Model::MakeLines() {
+void s21::Model::MakeLines() {
   std::size_t c = 0;
   for (const auto& surface : surfaces_) {
     for (std::size_t j = 0; j < surface.size() - 1; ++j) {
@@ -78,7 +78,7 @@ void Model::MakeLines() {
   }
 }
 
-void Model::MakeTriangles() {
+void s21::Model::MakeTriangles() {
   std::size_t c = 0;
   for (const auto& surface : surfaces_) {
     if (surface.size() < 3) continue;
@@ -92,25 +92,25 @@ void Model::MakeTriangles() {
   }
 }
 
-void Model::MoveModelX(float range) {
+void s21::Model::MoveModelX(float range) {
   ApplyTransformation([range](auto& v) {
       v.x_ += range;
   });
 }
 
-void Model::MoveModelY(float range) {
+void s21::Model::MoveModelY(float range) {
   ApplyTransformation([range](auto& v) {
       v.y_ += range;
   });
 }
 
-void Model::MoveModelZ(float range) {
+void s21::Model::MoveModelZ(float range) {
   ApplyTransformation([range](auto& v) {
       v.z_ += range;
   });
 }
 
-void Model::RotateModelX(float angle) {
+void s21::Model::RotateModelX(float angle) {
   ApplyTransformation([angle](auto& v) {
     float y = v.y_, z = v.z_;
     v.y_ = y * std::cos(angle) - z * std::sin(angle);
@@ -118,7 +118,7 @@ void Model::RotateModelX(float angle) {
   });
 }
 
-void Model::RotateModelY(float angle) {
+void s21::Model::RotateModelY(float angle) {
   ApplyTransformation([angle](auto& v) {
     float x = v.x_, z = v.z_;
     v.x_ = x * std::cos(angle) + z * std::sin(angle);
@@ -126,7 +126,7 @@ void Model::RotateModelY(float angle) {
   });
 }
 
-void Model::RotateModelZ(float angle) {
+void s21::Model::RotateModelZ(float angle) {
   ApplyTransformation([angle](auto& v) {
     float x = v.x_, y = v.y_;
     v.x_ = x * std::cos(angle) - y * std::sin(angle);
@@ -134,7 +134,7 @@ void Model::RotateModelZ(float angle) {
   });
 }
 
-void Model::Scale(float n) {
+void s21::Model::Scale(float n) {
   ApplyTransformation([n](auto& v) {
     v.x_ *= n;
     v.y_ *= n;

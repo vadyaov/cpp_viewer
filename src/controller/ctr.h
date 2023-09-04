@@ -5,6 +5,8 @@
 
 #include "../model/model.h"
 
+namespace s21 {
+
 class Controller {
   public:
     ~Controller()  = default;
@@ -47,5 +49,7 @@ class Controller {
     Controller() = default;
     std::vector<Model> models;
 };
+
+} // namespace s21
 
 #endif // CTR_H_

@@ -1,8 +1,8 @@
 #include "model_drawer.h"
 
-ModelDrawer* ModelDrawer::instance = 0;
+s21::ModelDrawer* s21::ModelDrawer::instance = 0;
 
-ModelDrawer::ModelDrawer() : shader_{new s21::Shader("shaders/versh.glsl",
+s21::ModelDrawer::ModelDrawer() : shader_{new s21::Shader("shaders/versh.glsl",
                                       "shaders/fragm.glsl")} {
   glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -15,21 +15,21 @@ ModelDrawer::ModelDrawer() : shader_{new s21::Shader("shaders/versh.glsl",
   shader_->use();
 }
 
-ModelDrawer::~ModelDrawer() {
+s21::ModelDrawer::~ModelDrawer() {
       glDeleteVertexArrays(1, &vertex_array_);
       glDeleteBuffers(1, &vertex_buffer_);
       delete shader_;
 }
 
-void ModelDrawer::SetColor(const std::string& name, const glm::vec4& color) {
+void s21::ModelDrawer::SetColor(const std::string& name, const glm::vec4& color) {
   shader_->setVec4(name, color);
 }
 
-    void ModelDrawer::SetSize(const std::string& name, float size) {
+    void s21::ModelDrawer::SetSize(const std::string& name, float size) {
       shader_->setFloat(name, size);
     }
 
-    void ModelDrawer::Draw(std::size_t size, const _3DVertex* start, GLuint type) {
+    void s21::ModelDrawer::Draw(std::size_t size, const _3DVertex* start, GLuint type) {
 
       glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_); // lishnee na vsiakiy
 
@@ -43,7 +43,7 @@ void ModelDrawer::SetColor(const std::string& name, const glm::vec4& color) {
     }
 
 
-    void ModelDrawer::MakeMVP(bool ortho) {
+    void s21::ModelDrawer::MakeMVP(bool ortho) {
       glm::mat4 model = glm::mat4(1.0f);
       glm::mat4 view = glm::mat4(1.0f);
       glm::mat4 projection = glm::mat4(1.0f);

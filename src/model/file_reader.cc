@@ -43,11 +43,11 @@ namespace {
   }
 } // namespace
 
-FileReader::FileReader(const std::string& path) : file_{path} {
+s21::FileReader::FileReader(const std::string& path) : file_{path} {
       if (!file_) throw std::invalid_argument("Incorrect filename");
 }
 
-std::vector<_3DVertex> FileReader::GetVertexBuffer() {
+std::vector<_3DVertex> s21::FileReader::GetVertexBuffer() {
   std::vector<_3DVertex> vertex_buf;
 
   std::string line;
@@ -62,7 +62,7 @@ std::vector<_3DVertex> FileReader::GetVertexBuffer() {
   return vertex_buf;
 }
 
-std::vector<std::vector<int>> FileReader::GetSurfaceBuffer() {
+std::vector<std::vector<int>> s21::FileReader::GetSurfaceBuffer() {
   std::vector<std::vector<int>> surface_buf;
   file_.seekg(pos_);
 

@@ -6,6 +6,8 @@
 
 #include "vertex.h"
 
+namespace s21 {
+
 class FileReader {
   public:
     FileReader() = default;
@@ -21,5 +23,7 @@ class FileReader {
     std::ifstream file_;
     std::streampos pos_;
 };
+
+} // namespace s21
 
 #endif  // FILE_READER_H_

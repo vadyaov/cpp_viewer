@@ -7,7 +7,6 @@
 #include "../imgui/imgui_impl_opengl3.h"
 #include "../imgui/imgui-knobs.h"
 
-
 #include <iostream>
 #include <SDL2/SDL_surface.h>
 
@@ -15,7 +14,7 @@ static void ErrorCallback(const int error, const char *description) {
   std::cerr << "Glfw Error " << error << ": " << description;
 }
 
-Facade::Facade() : ctr_{Controller::GetInstance()} {
+s21::Facade::Facade() : ctr_{Controller::GetInstance()} {
 
   glfwSetErrorCallback(ErrorCallback);
   if (!glfwInit())
@@ -62,7 +61,7 @@ Facade::Facade() : ctr_{Controller::GetInstance()} {
   ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
-void Facade::Run() const {
+void s21::Facade::Run() const {
 
   Settings s = Settings::Builder().Build();
   LoadModel(std::string("models/") + std::string(s.filenames.at(0)));
@@ -93,7 +92,7 @@ void Facade::Run() const {
 
 }
 
-void Facade::SetingsWindow(Settings& s) const {
+void s21::Facade::SetingsWindow(Settings& s) const {
     ImGui::Begin("Settings");
 
     if (ImGui::Button("Browse")) s.file_dialog.Open();
@@ -227,7 +226,7 @@ void Facade::SetingsWindow(Settings& s) const {
     }
 }
 
-void Facade::MakeScreenShot(bool bmp, bool jpg) const {
+void s21::Facade::MakeScreenShot(bool bmp, bool jpg) const {
   int height = 0;
   int width = 0;
   glfwGetFramebufferSize(window, &width, &height);
@@ -249,7 +248,7 @@ void Facade::MakeScreenShot(bool bmp, bool jpg) const {
   }
 }
 
-Facade::~Facade() {
+s21::Facade::~Facade() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
@@ -260,7 +259,7 @@ Facade::~Facade() {
   delete ctr_;
 }
 
-void Facade::LoadModel(const std::string& path) const {
+void s21::Facade::LoadModel(const std::string& path) const {
   try {
     ctr_->AddModel(path);
   } catch (const std::exception& e) {
@@ -269,7 +268,7 @@ void Facade::LoadModel(const std::string& path) const {
   }
 }
 
-void Facade::DrawModel(const Settings& s) const {
+void s21::Facade::DrawModel(const Settings& s) const {
   if (ctr_->Empty()) return;
 
   drawer_->MakeMVP(s.ortho);

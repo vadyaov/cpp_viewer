@@ -1,7 +1,7 @@
 #include "view/facade.h"
 
 int main() {
-  const Facade& window = Facade::GetInstance();
+  const s21::Facade& window = s21::Facade::GetInstance();
   window.Run();
   return 0;
 }

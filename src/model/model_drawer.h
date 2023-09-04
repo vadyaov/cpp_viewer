@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+namespace s21 {
+
 class ModelDrawer {
   public:
 
@@ -35,6 +37,8 @@ class ModelDrawer {
     GLuint vertex_array_;
     GLuint vertex_buffer_;
 };
+
+} // namespace s21
 
 #endif // MODEL_DRAWER_H_
 
