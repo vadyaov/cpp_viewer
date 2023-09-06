@@ -16,7 +16,9 @@ namespace {
      std::size_t num = 0;
      for (const auto& surface : surfaces) {
        if (surface.size() < 3) continue;
-       num += surface.size() == 3 ? 1 : surface.size() - 1;
+       else if (surface.size() == 3) ++num;
+       else
+         num += surface.size() - 2;
      }
      return num * 3;
    }

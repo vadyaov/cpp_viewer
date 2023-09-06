@@ -9,8 +9,8 @@ namespace s21 {
 
 class Model {
   public:
-    Model() = default;
-    ~Model() = default;
+    Model() {}
+    ~Model() {}
 
     Model(Model&& other) noexcept;
 
