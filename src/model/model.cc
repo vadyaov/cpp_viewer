@@ -1,6 +1,7 @@
 #include "model.h"
 
 #include <cmath>
+#include <iostream>
 
 namespace {
  std::size_t CountLines(const std::vector<std::vector<int>>& surfaces) {
@@ -53,6 +54,7 @@ std::size_t s21::Model::TrianglesSize() const noexcept {return triangles_.size()
 std::size_t s21::Model::SurfaceSize() const noexcept {return surfaces_.size();}
 
 void s21::Model::LoadModel(const std::string& path) {
+  std::cout << path << std::endl;
   FileReader reader(path);
 
   vertices_ = reader.GetVertexBuffer();

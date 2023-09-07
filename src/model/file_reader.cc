@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iostream>
 
 #include "file_reader.h"
 
@@ -44,7 +45,8 @@ namespace {
 } // namespace
 
 s21::FileReader::FileReader(const std::string& path) : file_{path} {
-      if (!file_) throw std::invalid_argument("Incorrect filename");
+  std::cout << "path = " << path << std::endl;
+      if (!file_.is_open()) throw std::invalid_argument("Incorrect filename");
 }
 
 std::vector<_3DVertex> s21::FileReader::GetVertexBuffer() {

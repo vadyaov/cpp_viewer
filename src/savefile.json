@@ -1,33 +1,33 @@
 {
-    "bmp": true,
+    "bmp": false,
     "clear_color": [
-        0.0,
-        0.0,
-        0.0
+        0.3186274766921997,
+        0.234284907579422,
+        0.234284907579422
     ],
-    "jpg": true,
-    "last_filename": "lamp.obj",
-    "line_width": 0.0,
+    "jpg": false,
+    "last_filename": "pyramid.obj",
+    "line_width": 2.510999917984009,
     "lines": true,
     "lines_color": [
         0.0,
         0.0,
         0.0
     ],
-    "move_speed": 0.703000009059906,
+    "move_speed": 0.4009999930858612,
     "ortho": false,
-    "point_size": 1.4129999876022339,
-    "points": true,
+    "point_size": 2.690999984741211,
+    "points": false,
     "rounded": false,
     "triangles_color": [
         0.36917924880981445,
         0.5490195751190186,
         0.3579392433166504
     ],
-    "tringles": true,
+    "tringles": false,
     "vertex_color": [
-        1.0,
-        1.0,
-        1.0
+        0.37254899740219116,
+        0.11322568356990814,
+        0.11322568356990814
     ]
 }

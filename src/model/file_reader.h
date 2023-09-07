@@ -10,8 +10,8 @@ namespace s21 {
 
 class FileReader {
   public:
-    FileReader() = default;
-    ~FileReader() = default;
+    FileReader() {};
+    ~FileReader() {};
 
     explicit FileReader(const std::string&);
 
