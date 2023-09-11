@@ -10,8 +10,8 @@ set(APP_VERSION_MINOR 0)
 set(APP_TARGET vimer.app)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
-add_compile_options(-fsanitize=address)
-add_link_options(-fsanitize=address)
+# add_compile_options(-fsanitize=address)
+# add_link_options(-fsanitize=address)
 
 include(FetchContent)
 
@@ -26,12 +26,13 @@ FetchContent_MakeAvailable(json)
 add_subdirectory(imgui)
 include_directories(${PROJECT_SOURCE_DIR})
 add_executable(${APP_TARGET}
-  controller/ctr.cc
-  model/model.cc
-  model/model_drawer.cc
-  model/file_reader.cc
-  view/facade.cc
-  view/settings.cc
+  controller/Controller.cc
+  model/Aphine.cc
+  model/Model.cc
+  model/Drawer.cc
+  model/Reader.cc
+  view/Facade.cc
+  view/Settings.cc
   imgui/imgui-knobs.cpp
   main.cc)
 target_link_libraries(${APP_TARGET} imgui)

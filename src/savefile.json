@@ -1,33 +1,34 @@
 {
-    "bmp": false,
+    "bmp": true,
     "clear_color": [
-        0.3186274766921997,
-        0.234284907579422,
-        0.234284907579422
+        0.07058823853731155,
+        0.7215686440467834,
+        0.4627451002597809
     ],
-    "jpg": false,
-    "last_filename": "pyramid.obj",
-    "line_width": 2.510999917984009,
+    "jpg": true,
+    "last_filename": "/home/vadim/Projects/School21/cpp_viewer/src/models/dragon.obj",
+    "line_width": 0,
     "lines": true,
     "lines_color": [
-        0.0,
-        0.0,
-        0.0
+        0.07450980693101883,
+        0.003921568859368563,
+        0.9176470637321472
     ],
-    "move_speed": 0.4009999930858612,
+    "move_speed": 0.7250000238418579,
     "ortho": false,
-    "point_size": 2.690999984741211,
+    "point_size": 0.47200000286102295,
     "points": false,
     "rounded": false,
+    "strippled": false,
     "triangles_color": [
-        0.36917924880981445,
-        0.5490195751190186,
-        0.3579392433166504
+        1.0,
+        0.44025367498397827,
+        0.17254900932312012
     ],
     "tringles": false,
     "vertex_color": [
-        0.37254899740219116,
-        0.11322568356990814,
-        0.11322568356990814
+        1.0,
+        1.0,
+        0.5176470875740051
     ]
 }

@@ -22,7 +22,7 @@ find_package(GTest REQUIRED)
 include(GoogleTest)
 enable_testing()
 
-file(GLOB SOURCES ./tests/*.cc model.cc file_reader.cc)
+file(GLOB SOURCES ./tests/*.cc model.cc Reader.cc)
 add_executable(tests ${SOURCES})
 
 target_link_libraries(tests GTest::gtest_main)
